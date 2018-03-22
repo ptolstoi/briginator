@@ -1,0 +1,62 @@
+{
+    "anchors": [
+        {
+            "id": "ca0d7c64-9988-40e6-a1ff-736d3abc3596",
+            "position": {
+                "x": 0.0,
+                "y": 0.10000000149011612
+            }
+        },
+        {
+            "id": "95111909-b7a3-4444-9ed1-a847ce66ccf0",
+            "position": {
+                "x": -2.0,
+                "y": 2.0
+            }
+        },
+        {
+            "id": "da7bc796-fe8c-4678-80f6-0b278e2bd780",
+            "position": {
+                "x": 2.0,
+                "y": 2.0
+            }
+        }
+    ],
+    "connections": [
+        {
+            "idA": "fbe062a1-5ecd-40b4-bc41-45bfb9778e17",
+            "idB": "ca0d7c64-9988-40e6-a1ff-736d3abc3596",
+            "type": 0
+        },
+        {
+            "idA": "ca0d7c64-9988-40e6-a1ff-736d3abc3596",
+            "idB": "2d2526a6-885e-44bc-b672-7840dd0230ec",
+            "type": 0
+        },
+        {
+            "idA": "fbe062a1-5ecd-40b4-bc41-45bfb9778e17",
+            "idB": "95111909-b7a3-4444-9ed1-a847ce66ccf0",
+            "type": 2
+        },
+        {
+            "idA": "ca0d7c64-9988-40e6-a1ff-736d3abc3596",
+            "idB": "95111909-b7a3-4444-9ed1-a847ce66ccf0",
+            "type": 2
+        },
+        {
+            "idA": "95111909-b7a3-4444-9ed1-a847ce66ccf0",
+            "idB": "da7bc796-fe8c-4678-80f6-0b278e2bd780",
+            "type": 1
+        },
+        {
+            "idA": "ca0d7c64-9988-40e6-a1ff-736d3abc3596",
+            "idB": "da7bc796-fe8c-4678-80f6-0b278e2bd780",
+            "type": 2
+        },
+        {
+            "idA": "da7bc796-fe8c-4678-80f6-0b278e2bd780",
+            "idB": "2d2526a6-885e-44bc-b672-7840dd0230ec",
+            "type": 2
+        }
+    ]
+}

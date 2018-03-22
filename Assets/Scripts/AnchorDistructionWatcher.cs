@@ -68,7 +68,7 @@ public class AnchorDistructionWatcher : MonoBehaviour
 
         go.GetComponent<MeshRenderer>().sharedMaterial = connectedBlock.GetComponent<MeshRenderer>().sharedMaterial;
 
-        var rb = go.AddComponent<Rigidbody2D>();
+        go.AddComponent<Rigidbody2D>();
         var hinge = go.AddComponent<HingeJoint2D>();
         // hinge.autoConfigureConnectedAnchor = false;
         hinge.connectedBody = attachTo;

@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Linq;
 
 [RequireComponent(typeof(BoxCollider2D))]
-public class BridgeEditor : MonoBehaviour
+public class BridgeEditorPrototype : MonoBehaviour
 {
     [SerializeField]
     Material RoadMaterial;

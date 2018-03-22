@@ -135,14 +135,14 @@ public class SpringVisualizer : MonoBehaviour
             Debug.DrawLine(from, to, color);
         }
 
-        if (showSum && false)
-        {
-            Debug.DrawLine(
-                transform.position - Vector3.right * transform.localScale.x / 2 - Vector3.forward * 0.5f,
-                transform.position + Vector3.right * transform.localScale.x / 2 - Vector3.forward * 0.5f,
-                Color.Lerp(Color.green, Color.red, sumSum / 10000f)
-            );
-        }
+        // if (showSum && false)
+        // {
+        //     Debug.DrawLine(
+        //         transform.position - Vector3.right * transform.localScale.x / 2 - Vector3.forward * 0.5f,
+        //         transform.position + Vector3.right * transform.localScale.x / 2 - Vector3.forward * 0.5f,
+        //         Color.Lerp(Color.green, Color.red, sumSum / 10000f)
+        //     );
+        // }
     }
 
     internal void CleanUp()

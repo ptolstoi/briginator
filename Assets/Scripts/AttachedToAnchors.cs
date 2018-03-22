@@ -6,16 +6,16 @@ using System.Linq;
 public class AttachedToAnchors : MonoBehaviour
 {
     public Transform[] Anchors = new Transform[2];
-    private Vector2 lastVelocity = Vector2.zero;
+    // private Vector2 lastVelocity = Vector2.zero;
     private new Transform transform;
-    private new Rigidbody2D rigidbody;
+    // private new Rigidbody2D rigidbody;
 
     private void Start()
     {
-        rigidbody = GetComponent<Rigidbody2D>();
+        // rigidbody = GetComponent<Rigidbody2D>();
         transform = base.transform;
 
-        lastVelocity = Vector2.zero;
+        // lastVelocity = Vector2.zero;
     }
 
     void FixedUpdate()
