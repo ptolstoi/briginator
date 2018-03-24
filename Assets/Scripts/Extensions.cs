@@ -25,4 +25,26 @@ public static class Extensions
 
         return result / count;
     }
+
+    public static Transform[] GetChildrenArray(this Transform source)
+    {
+        var result = new Transform[source.childCount];
+        var i = 0;
+        var enumerator = source.GetEnumerator();
+
+        while (enumerator.MoveNext())
+        {
+            result[i] = enumerator.Current as Transform;
+            i++;
+        }
+
+        return result;
+    }
+
+    public static void Swap<T>(ref T a, ref T b)
+    {
+        T tmp = a;
+        a = b;
+        b = tmp;
+    }
 }

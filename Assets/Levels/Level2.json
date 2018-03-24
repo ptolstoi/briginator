@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "name": "First Level",
+    "name": "Second Level",
     "rect": {
         "serializedVersion": "2",
         "x": -4.0,
@@ -10,28 +10,28 @@
     },
     "fixedAnchors": [
         {
-            "id": "fbe062a1-5ecd-40b4-bc41-45bfb9778e17",
+            "id": "c059704d-c048-4ae5-9f27-5bff0faadcd2",
             "position": {
                 "x": -4.0,
                 "y": 0.0
             }
         },
         {
-            "id": "2d2526a6-885e-44bc-b672-7840dd0230ec",
+            "id": "76448129-2ba5-481c-8979-4de6819eebdf",
             "position": {
                 "x": 4.0,
-                "y": 0.0
+                "y": 2.0
             }
         }
     ],
     "startPoint": {
         "x": -5.0,
-        "y": 0.5,
+        "y": 1.0,
         "z": 0.0
     },
     "endPoint": {
         "x": 5.0,
-        "y": 0.5,
+        "y": 3.0,
         "z": 0.0
     },
     "startLand": {
@@ -41,7 +41,7 @@
     },
     "endLand": {
         "x": 4.0,
-        "y": 0.0,
+        "y": 2.0,
         "z": 0.0
     }
 }

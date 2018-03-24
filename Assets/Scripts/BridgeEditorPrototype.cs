@@ -106,7 +106,7 @@ public class BridgeEditorPrototype : MonoBehaviour
 
     private GameObject GetOrCreateAnchorAt(Vector2 position)
     {
-        var existingAnchors = Physics2D.OverlapCircleAll(position, gridSize / 2, 1 << LayerMask.NameToLayer("NoSelfIntersection"))
+        var existingAnchors = Physics2D.OverlapCircleAll(position, gridSize / 2, 1 << LayerMask.NameToLayer("Bridge"))
             .Where(x => x is CircleCollider2D);
 
 
@@ -115,7 +115,7 @@ public class BridgeEditorPrototype : MonoBehaviour
             var go = new GameObject("Anchor");
             anchors.Add(go);
             DrawIcon(go, 1);
-            go.layer = LayerMask.NameToLayer("NoSelfIntersection");
+            go.layer = LayerMask.NameToLayer("Bridge");
             go.transform.position = position;
             go.transform.SetParent(transform);
             var circle = go.AddComponent<CircleCollider2D>();
@@ -153,22 +153,23 @@ public class BridgeEditorPrototype : MonoBehaviour
         var isSlope = Mathf.Abs(slopeAngle) >= 11 || Mathf.Abs(tA.position.y) > hexHeight * 2;
 
 
-        var anchorJoint = goA.AddComponent<HingeJoint2D>();
+        var anchorJoint = goA.AddComponent<SpringJoint2D>();
+
         anchorJoint.enabled = false;
-        // anchorJoint.autoConfigureDistance = false;
-
-        // anchorJoint.distance = anchorDistance;
+        anchorJoint.autoConfigureDistance = false;
         anchorJoint.connectedBody = rbB;
-
-        // anchorJoint.dampingRatio = 0.25f;
-        // anchorJoint.frequency = 25;
         anchorJoint.breakForce = maxForce;
+
+        anchorJoint.distance = anchorDistance;
+        anchorJoint.dampingRatio = 0.25f;
+        anchorJoint.frequency = 25;
+
 
         var goRoadBlock = GameObject.CreatePrimitive(PrimitiveType.Cube);
         var vizu = goRoadBlock.AddComponent<SpringVisualizer>();
         vizu.showSum = true;
         goRoadBlock.transform.SetParent(transform);
-        goRoadBlock.layer = LayerMask.NameToLayer("NoSelfIntersection");
+        goRoadBlock.layer = LayerMask.NameToLayer("Bridge");
         DestroyImmediate(goRoadBlock.GetComponent<BoxCollider>());
         var ridBo = goRoadBlock.AddComponent<Rigidbody2D>();
         ridBo.isKinematic = true;

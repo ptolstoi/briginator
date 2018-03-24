@@ -94,7 +94,7 @@ public class SpringVisualizer : MonoBehaviour
 
                 if (float.IsInfinity(joint.breakForce))
                 {
-                    color = acab[joint];
+                    color = acab.ContainsKey(joint) ? acab[joint] : Color.white;
                 }
                 else
                 {
@@ -132,6 +132,12 @@ public class SpringVisualizer : MonoBehaviour
 
 
             }
+
+            from += Vector3.forward;
+            to += Vector3.forward;
+
+            color = acab.ContainsKey(joint) ? acab[joint] : Color.white;
+
             Debug.DrawLine(from, to, color);
         }
 

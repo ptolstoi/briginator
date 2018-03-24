@@ -417,7 +417,7 @@ MonoBehaviour:
   FixedAnchors:
   - {fileID: 614027712}
   - {fileID: 304330353}
-  maxForce: 4000
+  maxForce: 3000
   gridSize: 0.5
   sigma: 0.9
 --- !u!4 &556135102

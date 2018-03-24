@@ -37,6 +37,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4374579848046534}
   - component: {fileID: 50245608542808048}
+  - component: {fileID: 60673381374247418}
   - component: {fileID: 235620443663428476}
   - component: {fileID: 235658486145963114}
   - component: {fileID: 114604289524849454}
@@ -91,7 +92,6 @@ GameObject:
   - component: {fileID: 4345537194819316}
   - component: {fileID: 23044326512389626}
   - component: {fileID: 33773992672542046}
-  - component: {fileID: 60814966251067140}
   m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
@@ -474,7 +474,7 @@ Rigidbody2D:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1238771997308276}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -557,19 +557,19 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.11
---- !u!60 &60814966251067140
+--- !u!60 &60673381374247418
 PolygonCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1745107011634604}
+  m_GameObject: {fileID: 1238771997308276}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -0.118}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -614,7 +614,7 @@ WheelJoint2D:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1238771997308276}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   m_EnableCollision: 0
   m_ConnectedRigidBody: {fileID: 50649847623150036}
@@ -637,7 +637,7 @@ WheelJoint2D:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1238771997308276}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   m_EnableCollision: 0
   m_ConnectedRigidBody: {fileID: 50317659900106624}

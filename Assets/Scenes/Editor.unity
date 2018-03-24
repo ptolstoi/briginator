@@ -145,16 +145,14 @@ MonoBehaviour:
   EndLandPrefab: {fileID: 1298586388388552, guid: 1062cf100a9e17943a9ad089a6cc8b6b,
     type: 2}
   CarPrefab: {fileID: 1238771997308276, guid: bff01404a290cd042a436da8ff40a453, type: 2}
-  Environment: {fileID: 1215934865}
-  Bridge: {fileID: 1089711579}
-  CarLayer:
-    serializedVersion: 2
-    m_Bits: 512
-  BridgeLayer:
-    serializedVersion: 2
-    m_Bits: 1024
+  EnvironmentParent: {fileID: 1215934865}
+  BridgeParent: {fileID: 1089711579}
+  CarLayer: 9
+  BridgeLayer: 8
+  EnvironmentLayer: 10
   levels:
   - {fileID: 4900000, guid: f945214e437d09742b9e6a3419227eb5, type: 3}
+  - {fileID: 4900000, guid: 296d83ebc60d180439fc59800399a4ac, type: 3}
 --- !u!4 &556135102
 Transform:
   m_ObjectHideFlags: 0
