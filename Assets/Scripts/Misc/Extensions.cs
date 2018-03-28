@@ -41,6 +41,16 @@ public static class Extensions
         return result;
     }
 
+    public static void SetLayerRecursive(this GameObject source, int layer)
+    {
+        source.layer = layer;
+
+        foreach (Transform c in source.transform)
+        {
+            c.gameObject.SetLayerRecursive(layer);
+        }
+    }
+
     public static void Swap<T>(ref T a, ref T b)
     {
         T tmp = a;

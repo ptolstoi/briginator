@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33123760079154462}
   - component: {fileID: 23063031614765420}
   - component: {fileID: 61497327833365510}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: End Grass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37,7 +37,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4982093384388902}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: End
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55,7 +55,7 @@ GameObject:
   - component: {fileID: 33552317764429830}
   - component: {fileID: 23916480228992164}
   - component: {fileID: 61686207844960628}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}

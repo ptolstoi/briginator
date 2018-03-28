@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 556135102}
   - component: {fileID: 556135101}
   m_Layer: 8
-  m_Name: Editor
+  m_Name: Level Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -153,6 +153,12 @@ MonoBehaviour:
   levels:
   - {fileID: 4900000, guid: f945214e437d09742b9e6a3419227eb5, type: 3}
   - {fileID: 4900000, guid: 296d83ebc60d180439fc59800399a4ac, type: 3}
+  ConnectionSpringFrequency: 1
+  ConnectionSpringDampingRatio: 0.5
+  RoadHeight: 0.1
+  RoadMaterial: {fileID: 2100000, guid: b3e88635ed67e3b4cb54b4f1086e3227, type: 2}
+  WoodMaterial: {fileID: 2100000, guid: cfa1ffe063dc99143b31b20d9f158b4e, type: 2}
+  SteelMaterial: {fileID: 2100000, guid: 84397a5d4e5ba6647b9fa95c4e30cb53, type: 2}
 --- !u!4 &556135102
 Transform:
   m_ObjectHideFlags: 0

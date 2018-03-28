@@ -7,7 +7,6 @@ public class EndZone : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        Debug.Log(other.gameObject.name);
         if (other == CarCollider)
         {
             LevelManager.OnEnterEndZone();
