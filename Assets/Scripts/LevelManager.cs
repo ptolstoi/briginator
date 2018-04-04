@@ -38,6 +38,8 @@ public partial class LevelManager : MonoBehaviour
     [SerializeField]
     private float ConnectionSpringDampingRatio = 0.5f;
     [SerializeField]
+    private float MaximalForce = 4000;
+    [SerializeField]
     public float RoadHeight = 0.1f;
 
     [Header("Renderer")]
@@ -49,11 +51,11 @@ public partial class LevelManager : MonoBehaviour
     private Material SteelMaterial;
 
 
-    public Level level { get; private set; }
-    public Solution solution { get; private set; }
+    [HideInInspector] public Level level;
+    [HideInInspector] public Solution solution;
 
-    public Dictionary<string, Rigidbody2D> AnchorId2Rigidbody { get; private set; }
-    public Dictionary<Connection, Rigidbody2D> Connection2Rigidbody { get; private set; }
+    [HideInInspector] public Dictionary<string, Rigidbody2D> AnchorId2Rigidbody;
+    [HideInInspector] public Dictionary<Connection, Rigidbody2D> Connection2Rigidbody;
 
     private BridgeMeshManager bridgeMeshManager;
     private EndZone endZone;
@@ -69,7 +71,7 @@ public partial class LevelManager : MonoBehaviour
             Name = "First Level",
             Rect = new Rect(Vector2.left * 4, new Vector2(8, 6)),
             FixedAnchors = new List<Anchor>(new[] { new Anchor(-4, 0), new Anchor(4, 0) }),
-            StartPoint = new Vector3(-5, 0.5f),
+            StartPoint = new Vector3(-5, 0.5f, -0.5f),
             EndPoint = new Vector3(5, 0.5f),
             StartLand = new Vector3(-4, 0),
             EndLand = new Vector3(4, 0),

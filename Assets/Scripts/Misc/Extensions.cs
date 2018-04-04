@@ -57,4 +57,19 @@ public static class Extensions
         a = b;
         b = tmp;
     }
+
+    public static V GetOrDefault<K, V>(this Dictionary<K, V> self, K key, V defaultValue = default(V))
+    {
+        return self.ContainsKey(key) ? self[key] : defaultValue;
+    }
+
+    public static V GetOrDefault<K, V>(this Dictionary<K, V> self, K key, Func<V> lazyDefaultValue)
+    {
+        return self.ContainsKey(key) ? self[key] : lazyDefaultValue();
+    }
+
+    public static T EnsureComponent<T>(this GameObject self) where T : Component
+    {
+        return self.GetComponent<T>() ?? self.AddComponent<T>();
+    }
 }

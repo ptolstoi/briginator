@@ -33,6 +33,7 @@ public partial class LevelManager
 
     private void OnDrawGizmosSelected()
     {
+        return;
         if (level == null || level.FixedAnchors == null || level.FixedAnchors.Count == 0)
         {
             return;

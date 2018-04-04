@@ -84,7 +84,7 @@ public partial class LevelManager : MonoBehaviour
 
                 rigidbodies.AddRange(rigidbodiesInCar);
 
-                endZone.CarCollider = go.GetComponent<Collider2D>();
+                endZone.CarCollider = go.GetComponentInChildren<Collider2D>();
             }
         );
     }
@@ -111,6 +111,11 @@ public partial class LevelManager : MonoBehaviour
                 rigidbodies.Add(rigidbody);
 
                 DecorateAnchor(go, anchor);
+
+                bridgeMeshManager.GenerateMeshFor( // TODO bin ich richtig hier? xD
+                    anchor: anchor,
+                    atGameObject: go
+                );
             }
         ).GetComponent<Rigidbody2D>();
     }
@@ -147,16 +152,19 @@ public partial class LevelManager : MonoBehaviour
             springJoint.connectedBody = rbB;
 
             springJoint.frequency = ConnectionSpringFrequency;
-            // springJoint.breakForce = maxForce;
+            springJoint.breakForce = MaximalForce;
 
             springJoint.distance = anchorDistance;
             springJoint.dampingRatio = ConnectionSpringDampingRatio;
 
+            var connectionManager = goA.AddComponent<ConnectionManager>();
+            connectionManager.meshGenerator = bridgeMeshManager;
+            connectionManager.connectionJoint = springJoint;
+            connectionManager.connection = Connection;
+
+
 #if UNITY_EDITOR
-            if (goA.GetComponent<SpringVisualizer>() == null)
-            {
-                goA.AddComponent<SpringVisualizer>();
-            }
+            goA.EnsureComponent<SpringVisualizer>();
 #endif
 
             joints.Add(springJoint);
@@ -196,6 +204,8 @@ public partial class LevelManager : MonoBehaviour
                         hingeSpring.anchor = Vector2.right / 2;
 
                         Connection2Rigidbody[Connection] = rbRoad;
+
+                        connectionManager.connectedBlock = go;
                     }
                 );
             }

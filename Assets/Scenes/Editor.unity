@@ -153,12 +153,30 @@ MonoBehaviour:
   levels:
   - {fileID: 4900000, guid: f945214e437d09742b9e6a3419227eb5, type: 3}
   - {fileID: 4900000, guid: 296d83ebc60d180439fc59800399a4ac, type: 3}
-  ConnectionSpringFrequency: 1
+  ConnectionSpringFrequency: 6
   ConnectionSpringDampingRatio: 0.5
+  MaximalForce: 3000
   RoadHeight: 0.1
   RoadMaterial: {fileID: 2100000, guid: b3e88635ed67e3b4cb54b4f1086e3227, type: 2}
-  WoodMaterial: {fileID: 2100000, guid: cfa1ffe063dc99143b31b20d9f158b4e, type: 2}
-  SteelMaterial: {fileID: 2100000, guid: 84397a5d4e5ba6647b9fa95c4e30cb53, type: 2}
+  WoodMaterial: {fileID: 2100000, guid: bd36cc901e066ec4395961ddf10df00f, type: 2}
+  SteelMaterial: {fileID: 2100000, guid: cc5c490220c217d48b4fb526b1dd8b7e, type: 2}
+  level:
+    version: 1
+    name: 
+    rect:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    fixedAnchors: []
+    startPoint: {x: 0, y: 0, z: 0}
+    endPoint: {x: 0, y: 0, z: 0}
+    startLand: {x: 0, y: 0, z: 0}
+    endLand: {x: 0, y: 0, z: 0}
+  solution:
+    anchors: []
+    connections: []
 --- !u!4 &556135102
 Transform:
   m_ObjectHideFlags: 0
@@ -315,7 +333,7 @@ Light:
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
