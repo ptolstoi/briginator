@@ -103,10 +103,10 @@ public partial class LevelManager : MonoBehaviour
 
 
 
-        // CleanUpLevel(); // Removes everything
-        // CleanUpSolution(); // Removes only the solution
-        // GenerateLevel(level); // Generates environment + fixed anchors
-        // GenerateSolution(solution); // Generates only solution
+        CleanUpLevel(); // Removes everything
+        CleanUpSolution(); // Removes only the solution
+        GenerateLevel(level); // Generates environment + fixed anchors
+        GenerateSolution(solution); // Generates only solution
         // Play();
         // ResetToSolution(solution); // Removes all stuff that changed during runtime + generates solution
     }

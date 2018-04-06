@@ -18,14 +18,19 @@ public class BridgeMeshManager : MonoBehaviour
     public Material WoodMaterial;
     public Material SteelMaterial;
     public Material MetalMaterial;
+    public Material LoadMaterial;
+    public Material MarkerMaterial;
 
+    public bool ShowLoad = true;
 
-    public void GenerateMeshFor(Connection connection, GameObject atGameObject, Parts with = Parts.All)
+    public event Action NeedMeshRegeneration;
+
+    public void GenerateMeshFor(Connection connection, GameObject atGameObject, Parts with = Parts.All, bool useLoadMaterial = false)
     {
         GenerateMesh(
             gameObject: atGameObject,
             meshName: connection + " " + with,
-            generator: MeshPartsForConnection(connection, with)
+            generator: MeshPartsForConnection(connection, with, useLoadMaterial)
         );
     }
 
@@ -40,14 +45,16 @@ public class BridgeMeshManager : MonoBehaviour
 
     private void GenerateMesh(GameObject gameObject, string meshName, IEnumerable<Tuple<Material, MeshPart>> generator)
     {
-        var meshRenderer = gameObject.AddComponent<MeshRenderer>();
-        var meshFilter = gameObject.AddComponent<MeshFilter>();
+        var meshRenderer = gameObject.EnsureComponent<MeshRenderer>();
+        var meshFilter = gameObject.EnsureComponent<MeshFilter>();
 
         meshRenderer.sharedMaterials = new[] {
             RoadMaterial,
             WoodMaterial,
             SteelMaterial,
-            MetalMaterial
+            MetalMaterial,
+            MarkerMaterial,
+            LoadMaterial
          };
 
         var mesh = new Mesh();
@@ -82,7 +89,7 @@ public class BridgeMeshManager : MonoBehaviour
         meshFilter.sharedMesh = mesh;
     }
 
-    IEnumerable<Tuple<Material, MeshPart>> MeshPartsForConnection(Connection connection, Parts parts)
+    IEnumerable<Tuple<Material, MeshPart>> MeshPartsForConnection(Connection connection, Parts parts, bool useLoadMaterial = false)
     {
         var left = Vector3.left / 2;
         var right = Vector3.right / 2;
@@ -100,8 +107,11 @@ public class BridgeMeshManager : MonoBehaviour
         var forward = Vector3.forward * (roadWidth / 2 - steelWidth / 2);
         var back = Vector3.back * (roadWidth / 2 - steelWidth / 2);
 
+        var overwriteMaterial = useLoadMaterial ? LoadMaterial : null;
+
         if (connection.Type == ConnectionType.Road)
         {
+            #region Road Parts
             yield return Tuple.Create(
                 RoadMaterial,
                 new RoadBox(
@@ -111,13 +121,33 @@ public class BridgeMeshManager : MonoBehaviour
                     height: roadHeight
                 ) as MeshPart
             );
+            yield return Tuple.Create(
+                overwriteMaterial ?? MarkerMaterial,
+                new RoadBox(
+                    left: left + forward,
+                    right: right + forward,
+                    width: roadHeight,
+                    height: roadHeight
+                ) as MeshPart
+            );
+            yield return Tuple.Create(
+                overwriteMaterial ?? MarkerMaterial,
+                new RoadBox(
+                    left: left + back,
+                    right: right + back,
+                    width: roadHeight,
+                    height: roadHeight
+                ) as MeshPart
+            );
+            #endregion
         }
         else if (connection.Type == ConnectionType.Steel)
         {
+            #region Steel Parts
             if (parts == Parts.All)
             {
                 yield return Tuple.Create(
-                    SteelMaterial,
+                    overwriteMaterial ?? SteelMaterial,
                     new SteelBox(
                         left: left + forward,
                         right: right + forward,
@@ -128,7 +158,7 @@ public class BridgeMeshManager : MonoBehaviour
                     ) as MeshPart
                 );
                 yield return Tuple.Create(
-                    SteelMaterial,
+                    overwriteMaterial ?? SteelMaterial,
                     new SteelBox(
                         left: left + back,
                         right: right + back,
@@ -145,7 +175,7 @@ public class BridgeMeshManager : MonoBehaviour
                 var end = parts == Parts.Left ? right : left;
 
                 yield return Tuple.Create(
-                    SteelMaterial,
+                    overwriteMaterial ?? SteelMaterial,
                     new SteelBoxPart(
                         left: start + forward,
                         right: end + forward,
@@ -156,7 +186,7 @@ public class BridgeMeshManager : MonoBehaviour
                     ) as MeshPart
                 );
                 yield return Tuple.Create(
-                    SteelMaterial,
+                    overwriteMaterial ?? SteelMaterial,
                     new SteelBoxPart(
                         left: start + back,
                         right: end + back,
@@ -167,13 +197,15 @@ public class BridgeMeshManager : MonoBehaviour
                     ) as MeshPart
                 );
             }
+            #endregion
         }
         else if (connection.Type == ConnectionType.Wood)
         {
+            #region Wood Parts
             if (parts == Parts.All)
             {
                 yield return Tuple.Create(
-                    WoodMaterial,
+                    overwriteMaterial ?? WoodMaterial,
                     new SteelBox(
                         left: left + forward,
                         right: right + forward,
@@ -184,7 +216,7 @@ public class BridgeMeshManager : MonoBehaviour
                     ) as MeshPart
                 );
                 yield return Tuple.Create(
-                    WoodMaterial,
+                    overwriteMaterial ?? WoodMaterial,
                     new SteelBox(
                         left: left + back,
                         right: right + back,
@@ -201,7 +233,7 @@ public class BridgeMeshManager : MonoBehaviour
                 var end = parts == Parts.Left ? right : left;
 
                 yield return Tuple.Create(
-                    WoodMaterial,
+                    overwriteMaterial ?? WoodMaterial,
                     new SteelBoxPart(
                         left: start + forward,
                         right: end + forward,
@@ -212,7 +244,7 @@ public class BridgeMeshManager : MonoBehaviour
                     ) as MeshPart
                 );
                 yield return Tuple.Create(
-                    WoodMaterial,
+                    overwriteMaterial ?? WoodMaterial,
                     new SteelBoxPart(
                         left: start + back,
                         right: end + back,
@@ -223,6 +255,7 @@ public class BridgeMeshManager : MonoBehaviour
                     ) as MeshPart
                 );
             }
+            #endregion
         }
     }
 

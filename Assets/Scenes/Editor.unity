@@ -156,7 +156,7 @@ MonoBehaviour:
   - {fileID: 4900000, guid: 296d83ebc60d180439fc59800399a4ac, type: 3}
   ConnectionSpringFrequency: 6
   ConnectionSpringDampingRatio: 0.5
-  MaximalForce: 3000
+  MaximalForce: 4500
   RoadHeight: 0.1
   bridgeMeshManager: {fileID: 1771194546}
   level:
@@ -346,6 +346,9 @@ MonoBehaviour:
   WoodMaterial: {fileID: 2100000, guid: bd36cc901e066ec4395961ddf10df00f, type: 2}
   SteelMaterial: {fileID: 2100000, guid: cc5c490220c217d48b4fb526b1dd8b7e, type: 2}
   MetalMaterial: {fileID: 2100000, guid: b051e25f391e02d4b8e86c60a20b773a, type: 2}
+  LoadMaterial: {fileID: 2100000, guid: de792ed048929eb4fba6899f6bbf1a4f, type: 2}
+  MarkerMaterial: {fileID: 2100000, guid: 5ecba1469e06d274ea9e4ff4d952ec25, type: 2}
+  ShowLoad: 1
 --- !u!1 &1874952095
 GameObject:
   m_ObjectHideFlags: 0

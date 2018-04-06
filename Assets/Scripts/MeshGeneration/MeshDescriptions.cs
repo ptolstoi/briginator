@@ -156,8 +156,9 @@ public class SteelBoxPart : MeshPart
 
     public readonly float innerWidth;
     public readonly float innerHeight;
+    public readonly bool hasBox;
 
-    public SteelBoxPart(Vector3 left, Vector3 right, float width, float height, float innerWidth, float innerHeight)
+    public SteelBoxPart(Vector3 left, Vector3 right, float width, float height, float innerWidth, float innerHeight, bool hasBox = true)
     {
         this.left = left;
         this.right = right;
@@ -165,6 +166,7 @@ public class SteelBoxPart : MeshPart
         this.height = height;
         this.innerWidth = innerWidth;
         this.innerHeight = innerHeight;
+        this.hasBox = hasBox;
     }
 
     protected override IEnumerable<MeshPart> Parts()
@@ -194,7 +196,10 @@ public class SteelBoxPart : MeshPart
         yield return new Quad(v2, v6, v7, v3); // left front
         yield return new Quad(v1, v4, v8, v5); // left back
 
-        yield return new Box(center, right, innerWidth, innerHeight);
+        if (hasBox)
+        {
+            yield return new Box(center, right, innerWidth, innerHeight);
+        }
     }
 }
 
@@ -209,8 +214,9 @@ public class SteelBox : MeshPart
 
     public readonly float innerWidth;
     public readonly float innerHeight;
+    public readonly bool hasBox;
 
-    public SteelBox(Vector3 left, Vector3 right, float width, float height, float innerWidth, float innerHeight)
+    public SteelBox(Vector3 left, Vector3 right, float width, float height, float innerWidth, float innerHeight, bool hasBox = true)
     {
         this.left = left;
         this.right = right;
@@ -218,6 +224,7 @@ public class SteelBox : MeshPart
         this.height = height;
         this.innerWidth = innerWidth;
         this.innerHeight = innerHeight;
+        this.hasBox = hasBox;
     }
 
     protected override IEnumerable<MeshPart> Parts()
@@ -229,7 +236,8 @@ public class SteelBox : MeshPart
             width: width,
             height: height,
             innerWidth: innerWidth,
-            innerHeight: innerHeight
+            innerHeight: innerHeight,
+            hasBox: hasBox
         );
         yield return new SteelBoxPart(
             left: right,
@@ -237,7 +245,8 @@ public class SteelBox : MeshPart
             width: width,
             height: height,
             innerWidth: innerWidth,
-            innerHeight: innerHeight
+            innerHeight: innerHeight,
+            hasBox: hasBox
         );
     }
 }

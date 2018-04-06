@@ -70,6 +70,11 @@ public static class Extensions
 
     public static T EnsureComponent<T>(this GameObject self) where T : Component
     {
-        return self.GetComponent<T>() ?? self.AddComponent<T>();
+        var comp = self.GetComponent<T>();
+        if (comp == null)
+        {
+            comp = self.AddComponent<T>();
+        }
+        return comp;
     }
 }
