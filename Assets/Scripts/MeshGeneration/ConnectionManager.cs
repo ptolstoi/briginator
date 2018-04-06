@@ -16,6 +16,7 @@ public class ConnectionManager : MonoBehaviour
     private Rigidbody2D otherRigidbody;
     private Transform otherTransform;
     private Transform meshTransform;
+    internal LevelManager levelManager;
 
     private void Start()
     {
@@ -24,8 +25,9 @@ public class ConnectionManager : MonoBehaviour
         otherTransform = otherRigidbody.transform;
 
         mesh = new GameObject("Mesh " + connection.Type);
+        mesh.layer = gameObject.layer;
         meshTransform = mesh.transform;
-        meshTransform.SetParent(transform.parent);
+        meshTransform.SetParent(levelManager.MeshParent);
 
         meshGenerator.GenerateMeshFor(
             connection: connection,
@@ -76,13 +78,7 @@ public class ConnectionManager : MonoBehaviour
         var rot = meshTransform.rotation;
 
         CreateBlock(connection.Type.ToString(), meshTransform.position + displToThis, rot, scale, rigidbody, true);
-
-        var rot180 = Quaternion.AngleAxis(180, meshTransform.up);
-
-        rot = rot180 * rot;
         CreateBlock(connection.Type.ToString(), meshTransform.position - displToThis, rot, scale, otherRigidbody, false);
-
-
 
         DestroyImmediate(mesh);
         mesh = null;
@@ -98,8 +94,9 @@ public class ConnectionManager : MonoBehaviour
     private void CreateBlock(string name, Vector3 position, Quaternion rotation, Vector3 localScale, Rigidbody2D attachTo, bool left)
     {
         var go = new GameObject("Broken " + name);
+        go.layer = gameObject.layer;
         var trnsf = go.transform;
-        trnsf.SetParent(transform.parent);
+        trnsf.SetParent(levelManager.MeshParent);
         trnsf.localScale = localScale;
         trnsf.position = position;
         trnsf.rotation = rotation;
@@ -112,7 +109,9 @@ public class ConnectionManager : MonoBehaviour
 
         go.AddComponent<Rigidbody2D>();
         var hinge = go.AddComponent<HingeJoint2D>();
+        hinge.autoConfigureConnectedAnchor = false;
         hinge.connectedBody = attachTo;
         hinge.anchor = (left ? Vector2.left : Vector2.right) / 2f;
+        hinge.connectedAnchor = Vector2.zero;
     }
 }

@@ -21,6 +21,8 @@ public partial class LevelManager : MonoBehaviour
     private Transform EnvironmentParent;
     [SerializeField]
     private Transform BridgeParent;
+    [SerializeField]
+    public Transform MeshParent;
     [Header("Layers")]
     [SerializeField, Layer]
     private int CarLayer;
@@ -42,13 +44,9 @@ public partial class LevelManager : MonoBehaviour
     [SerializeField]
     public float RoadHeight = 0.1f;
 
-    [Header("Renderer")]
+    [Header("Wiring")]
     [SerializeField]
-    private Material RoadMaterial;
-    [SerializeField]
-    private Material WoodMaterial;
-    [SerializeField]
-    private Material SteelMaterial;
+    private BridgeMeshManager bridgeMeshManager;
 
 
     [HideInInspector] public Level level;
@@ -57,7 +55,6 @@ public partial class LevelManager : MonoBehaviour
     [HideInInspector] public Dictionary<string, Rigidbody2D> AnchorId2Rigidbody;
     [HideInInspector] public Dictionary<Connection, Rigidbody2D> Connection2Rigidbody;
 
-    private BridgeMeshManager bridgeMeshManager;
     private EndZone endZone;
     private Dictionary<string, Rigidbody2D> id2Rigidbody;
     private List<Joint2D> joints;
@@ -103,19 +100,13 @@ public partial class LevelManager : MonoBehaviour
 
         Debug.Log(json);
 
-        bridgeMeshManager = BridgeParent.gameObject.AddComponent<BridgeMeshManager>();
-        bridgeMeshManager.LevelManager = this;
-        bridgeMeshManager.RoadMaterial = RoadMaterial;
-        bridgeMeshManager.WoodMaterial = WoodMaterial;
-        bridgeMeshManager.SteelMaterial = SteelMaterial;
 
 
 
-
-        CleanUpLevel(); // Removes everything
-        CleanUpSolution(); // Removes only the solution
-        GenerateLevel(level); // Generates environment + fixed anchors
-        GenerateSolution(solution); // Generates only solution
+        // CleanUpLevel(); // Removes everything
+        // CleanUpSolution(); // Removes only the solution
+        // GenerateLevel(level); // Generates environment + fixed anchors
+        // GenerateSolution(solution); // Generates only solution
         // Play();
         // ResetToSolution(solution); // Removes all stuff that changed during runtime + generates solution
     }

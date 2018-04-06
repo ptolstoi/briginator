@@ -147,6 +147,7 @@ MonoBehaviour:
   CarPrefab: {fileID: 1238771997308276, guid: bff01404a290cd042a436da8ff40a453, type: 2}
   EnvironmentParent: {fileID: 1215934865}
   BridgeParent: {fileID: 1089711579}
+  MeshParent: {fileID: 1771194545}
   CarLayer: 9
   BridgeLayer: 8
   EnvironmentLayer: 10
@@ -157,9 +158,7 @@ MonoBehaviour:
   ConnectionSpringDampingRatio: 0.5
   MaximalForce: 3000
   RoadHeight: 0.1
-  RoadMaterial: {fileID: 2100000, guid: b3e88635ed67e3b4cb54b4f1086e3227, type: 2}
-  WoodMaterial: {fileID: 2100000, guid: bd36cc901e066ec4395961ddf10df00f, type: 2}
-  SteelMaterial: {fileID: 2100000, guid: cc5c490220c217d48b4fb526b1dd8b7e, type: 2}
+  bridgeMeshManager: {fileID: 1771194546}
   level:
     version: 1
     name: 
@@ -302,6 +301,51 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1771194544
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1771194545}
+  - component: {fileID: 1771194546}
+  m_Layer: 0
+  m_Name: Mesh
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1771194545
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1771194544}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1771194546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1771194544}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 497927479b75b7548b725c7f6e4536a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LevelManager: {fileID: 556135101}
+  RoadMaterial: {fileID: 2100000, guid: b3e88635ed67e3b4cb54b4f1086e3227, type: 2}
+  WoodMaterial: {fileID: 2100000, guid: bd36cc901e066ec4395961ddf10df00f, type: 2}
+  SteelMaterial: {fileID: 2100000, guid: cc5c490220c217d48b4fb526b1dd8b7e, type: 2}
+  MetalMaterial: {fileID: 2100000, guid: b051e25f391e02d4b8e86c60a20b773a, type: 2}
 --- !u!1 &1874952095
 GameObject:
   m_ObjectHideFlags: 0

@@ -110,12 +110,14 @@ public partial class LevelManager : MonoBehaviour
                 id2Rigidbody.Add(anchor.Id, rigidbody);
                 rigidbodies.Add(rigidbody);
 
-                DecorateAnchor(go, anchor);
+                var anchorManager = go.AddComponent<AnchorManager>();
+                anchorManager.anchorGameObject = go;
+                anchorManager.levelManager = this;
+                anchorManager.meshGenerator = bridgeMeshManager;
+                anchorManager.anchor = anchor;
+                anchorManager.fixedAnchor = fixedAnchor;
 
-                bridgeMeshManager.GenerateMeshFor( // TODO bin ich richtig hier? xD
-                    anchor: anchor,
-                    atGameObject: go
-                );
+                DecorateAnchor(go, anchor);
             }
         ).GetComponent<Rigidbody2D>();
     }
@@ -158,9 +160,10 @@ public partial class LevelManager : MonoBehaviour
             springJoint.dampingRatio = ConnectionSpringDampingRatio;
 
             var connectionManager = goA.AddComponent<ConnectionManager>();
+            connectionManager.levelManager = this;
             connectionManager.meshGenerator = bridgeMeshManager;
-            connectionManager.connectionJoint = springJoint;
             connectionManager.connection = Connection;
+            connectionManager.connectionJoint = springJoint;
 
 
 #if UNITY_EDITOR

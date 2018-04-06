@@ -17,51 +17,28 @@ public class BridgeMeshManager : MonoBehaviour
     public Material RoadMaterial;
     public Material WoodMaterial;
     public Material SteelMaterial;
-
-    delegate void GenerateMeshDelegate(ref List<Vector3> vertices, ref Dictionary<Material, List<int>> indices);
+    public Material MetalMaterial;
 
 
     public void GenerateMeshFor(Connection connection, GameObject atGameObject, Parts with = Parts.All)
     {
         GenerateMesh(
             gameObject: atGameObject,
-            meshName: connection.ToString(),
-            parts: with,
-            generate: (ref List<Vector3> vertices, ref Dictionary<Material, List<int>> indices) =>
-            {
-                foreach (var tuple in MeshPartsForConnection(connection, with))
-                {
-                    var material = tuple.Item1;
-                    var part = tuple.Item2;
-                    var indexBuffer = indices.GetOrDefault(material, () => new List<int>());
-                    part.AddToBuffers(ref vertices, ref indexBuffer);
-                    indices[material] = indexBuffer;
-                }
-            }
+            meshName: connection + " " + with,
+            generator: MeshPartsForConnection(connection, with)
         );
     }
 
-    public void GenerateMeshFor(Anchor anchor, GameObject atGameObject)
+    public void GenerateMeshFor(Anchor anchor, GameObject atGameObject, bool hasRoadConnections = false)
     {
         GenerateMesh(
             gameObject: atGameObject,
             meshName: "Anchor",
-            parts: Parts.All, //TODO macht kein sinn
-            generate: (ref List<Vector3> vertices, ref Dictionary<Material, List<int>> indices) =>
-            {
-                foreach (var tuple in MeshPartsForAnchor())
-                {
-                    var material = tuple.Item1;
-                    var part = tuple.Item2;
-                    var indexBuffer = indices.GetOrDefault(material, () => new List<int>());
-                    part.AddToBuffers(ref vertices, ref indexBuffer);
-                    indices[material] = indexBuffer;
-                }
-            }
+            generator: MeshPartsForAnchor(hasRoadConnections)
         );
     }
 
-    private void GenerateMesh(GameObject gameObject, string meshName, Parts parts, GenerateMeshDelegate generate)
+    private void GenerateMesh(GameObject gameObject, string meshName, IEnumerable<Tuple<Material, MeshPart>> generator)
     {
         var meshRenderer = gameObject.AddComponent<MeshRenderer>();
         var meshFilter = gameObject.AddComponent<MeshFilter>();
@@ -69,18 +46,26 @@ public class BridgeMeshManager : MonoBehaviour
         meshRenderer.sharedMaterials = new[] {
             RoadMaterial,
             WoodMaterial,
-            SteelMaterial
+            SteelMaterial,
+            MetalMaterial
          };
 
         var mesh = new Mesh();
-        mesh.name = "Mesh " + meshName + " " + parts;
+        mesh.name = "Mesh " + meshName;
         mesh.subMeshCount = meshRenderer.sharedMaterials.Length;
 
         // generate mesh
         var vertices = new List<Vector3>();
         var indices = new Dictionary<Material, List<int>>();
 
-        generate(ref vertices, ref indices);
+        foreach (var tuple in generator)
+        {
+            var material = tuple.Item1;
+            var part = tuple.Item2;
+            var indexBuffer = indices.GetOrDefault(material, () => new List<int>());
+            part.AddToBuffers(ref vertices, ref indexBuffer);
+            indices[material] = indexBuffer;
+        }
 
         mesh.SetVertices(vertices);
 
@@ -101,15 +86,19 @@ public class BridgeMeshManager : MonoBehaviour
     {
         var left = Vector3.left / 2;
         var right = Vector3.right / 2;
+        var center = Vector3.zero;
 
         var roadHeight = LevelManager.RoadHeight;
         var roadWidth = 2f;
 
         var steelHeight = 0.25f;
-        var steelWidth = steelHeight;
+        var steelWidth = 0.25f;
 
-        var forward = Vector3.forward * (roadWidth / 2 - steelHeight / 2);
-        var back = Vector3.back * (roadWidth / 2 - steelHeight / 2);
+        var woodHeight = 0.2f;
+        var woodWidth = 0.2f;
+
+        var forward = Vector3.forward * (roadWidth / 2 - steelWidth / 2);
+        var back = Vector3.back * (roadWidth / 2 - steelWidth / 2);
 
         if (connection.Type == ConnectionType.Road)
         {
@@ -125,222 +114,160 @@ public class BridgeMeshManager : MonoBehaviour
         }
         else if (connection.Type == ConnectionType.Steel)
         {
-            yield return Tuple.Create(
-                SteelMaterial,
-                new SteelBox(
-                    left: left + forward,
-                    right: right + forward,
-                    width: steelWidth,
-                    height: steelHeight,
-                    innerWidth: steelWidth * 0.5f,
-                    innerHeight: steelHeight * 0.5f
-                ) as MeshPart
-            );
-            yield return Tuple.Create(
-                SteelMaterial,
-                new SteelBox(
-                    left: left + back,
-                    right: right + back,
-                    width: steelWidth,
-                    height: steelHeight,
-                    innerWidth: steelWidth * 0.5f,
-                    innerHeight: steelHeight * 0.5f
-                ) as MeshPart
-            );
+            if (parts == Parts.All)
+            {
+                yield return Tuple.Create(
+                    SteelMaterial,
+                    new SteelBox(
+                        left: left + forward,
+                        right: right + forward,
+                        width: steelWidth,
+                        height: steelHeight,
+                        innerWidth: steelWidth * 0.5f,
+                        innerHeight: steelHeight * 0.5f
+                    ) as MeshPart
+                );
+                yield return Tuple.Create(
+                    SteelMaterial,
+                    new SteelBox(
+                        left: left + back,
+                        right: right + back,
+                        width: steelWidth,
+                        height: steelHeight,
+                        innerWidth: steelWidth * 0.5f,
+                        innerHeight: steelHeight * 0.5f
+                    ) as MeshPart
+                );
+            }
+            else
+            {
+                var start = parts == Parts.Left ? left : right;
+                var end = parts == Parts.Left ? right : left;
+
+                yield return Tuple.Create(
+                    SteelMaterial,
+                    new SteelBoxPart(
+                        left: start + forward,
+                        right: end + forward,
+                        width: steelWidth,
+                        height: steelHeight,
+                        innerWidth: steelWidth * 0.5f,
+                        innerHeight: steelHeight * 0.5f
+                    ) as MeshPart
+                );
+                yield return Tuple.Create(
+                    SteelMaterial,
+                    new SteelBoxPart(
+                        left: start + back,
+                        right: end + back,
+                        width: steelWidth,
+                        height: steelHeight,
+                        innerWidth: steelWidth * 0.5f,
+                        innerHeight: steelHeight * 0.5f
+                    ) as MeshPart
+                );
+            }
         }
         else if (connection.Type == ConnectionType.Wood)
         {
-            yield return Tuple.Create(
-                WoodMaterial,
-                new SteelBox(
-                    left: left + forward,
-                    right: right + forward,
-                    width: steelWidth,
-                    height: steelHeight,
-                    innerWidth: steelWidth * 0.5f,
-                    innerHeight: steelHeight * 0.5f
-                ) as MeshPart
-            );
-            yield return Tuple.Create(
-                WoodMaterial,
-                new SteelBox(
-                    left: left + back,
-                    right: right + back,
-                    width: steelWidth,
-                    height: steelHeight,
-                    innerWidth: steelWidth * 0.5f,
-                    innerHeight: steelHeight * 0.5f
-                ) as MeshPart
-            );
+            if (parts == Parts.All)
+            {
+                yield return Tuple.Create(
+                    WoodMaterial,
+                    new SteelBox(
+                        left: left + forward,
+                        right: right + forward,
+                        width: woodWidth,
+                        height: woodHeight,
+                        innerWidth: woodWidth * 0.5f,
+                        innerHeight: woodHeight * 0.5f
+                    ) as MeshPart
+                );
+                yield return Tuple.Create(
+                    WoodMaterial,
+                    new SteelBox(
+                        left: left + back,
+                        right: right + back,
+                        width: woodWidth,
+                        height: woodHeight,
+                        innerWidth: woodWidth * 0.5f,
+                        innerHeight: woodHeight * 0.5f
+                    ) as MeshPart
+                );
+            }
+            else
+            {
+                var start = parts == Parts.Left ? left : right;
+                var end = parts == Parts.Left ? right : left;
+
+                yield return Tuple.Create(
+                    WoodMaterial,
+                    new SteelBoxPart(
+                        left: start + forward,
+                        right: end + forward,
+                        width: woodWidth,
+                        height: woodHeight,
+                        innerWidth: woodWidth * 0.5f,
+                        innerHeight: woodHeight * 0.5f
+                    ) as MeshPart
+                );
+                yield return Tuple.Create(
+                    WoodMaterial,
+                    new SteelBoxPart(
+                        left: start + back,
+                        right: end + back,
+                        width: woodWidth,
+                        height: woodHeight,
+                        innerWidth: woodWidth * 0.5f,
+                        innerHeight: woodHeight * 0.5f
+                    ) as MeshPart
+                );
+            }
         }
     }
 
-    IEnumerable<Tuple<Material, MeshPart>> MeshPartsForAnchor()
+    IEnumerable<Tuple<Material, MeshPart>> MeshPartsForAnchor(bool road)
     {
         var steelHeight = 0.25f;
         var steelWidth = steelHeight;
         var roadWidth = 2f;
-        var forward = Vector3.forward * (roadWidth / 2 - steelHeight / 2);
-        var back = Vector3.back * (roadWidth / 2 - steelHeight / 2);
+
+        var radius = steelHeight;
+        var depth = 0.3f;
+
+        var forward = Vector3.forward * (roadWidth / 2 - steelWidth / 2 - depth / 2);
+        var back = Vector3.back * (roadWidth / 2 - steelWidth / 2 - depth / 2);
 
         yield return Tuple.Create(
-                RoadMaterial,
-                new AnchorMesh(
-                    position: Vector3.back * (roadWidth / 2 - steelHeight / 2),
-                    radius: steelHeight,
-                    depth: steelWidth * 1.05f
-                ) as MeshPart
-            );
-        yield return Tuple.Create(
-            RoadMaterial,
+            MetalMaterial,
             new AnchorMesh(
-                position: Vector3.forward * (roadWidth / 2 - steelHeight / 2),
-                radius: steelHeight,
-                depth: steelWidth * 1.05f
+                position: Vector3.back * (roadWidth / 2 - steelWidth / 2),
+                radius: radius,
+                depth: depth
             ) as MeshPart
         );
         yield return Tuple.Create(
-            RoadMaterial,
-            new SteelBox(
-                left: back,
-                right: forward,
-                width: steelWidth,
-                height: steelHeight,
-                innerWidth: steelWidth * 0.5f,
-                innerHeight: steelHeight * 0.5f
+            MetalMaterial,
+            new AnchorMesh(
+                position: Vector3.forward * (roadWidth / 2 - steelWidth / 2),
+                radius: radius,
+                depth: depth
             ) as MeshPart
         );
-    }
 
-
-    IEnumerable<Tuple<Material, MeshPart>> IterateOverParts()
-    {
-        var solution = new Solution();
-        var roadHeight = LevelManager.RoadHeight;
-        var roadWidth = 2f;
-
-        var steelHeight = 0.25f;
-        var steelWidth = steelHeight;
-
-        foreach (var connection in solution.Connections)
+        if (!road)
         {
-            var anchorA = LevelManager.AnchorId2Rigidbody[connection.IdA].transform;
-            var anchorB = LevelManager.AnchorId2Rigidbody[connection.IdB].transform;
-            var forward = Vector3.forward * (roadWidth / 2 - steelHeight / 2);
-            var back = Vector3.back * (roadWidth / 2 - steelHeight / 2);
-
             yield return Tuple.Create(
-                RoadMaterial,
-                new AnchorMesh(
-                    position: anchorA.position + Vector3.back * (roadWidth / 2 - steelHeight / 2),
-                    radius: steelHeight,
-                    depth: steelWidth * 1.05f
-                ) as MeshPart
-            );
-            yield return Tuple.Create(
-                RoadMaterial,
-                new AnchorMesh(
-                    position: anchorB.position + Vector3.back * (roadWidth / 2 - steelHeight / 2),
-                    radius: steelHeight,
-                    depth: steelWidth * 1.05f
-                ) as MeshPart
-            );
-            yield return Tuple.Create(
-                RoadMaterial,
-                new AnchorMesh(
-                    position: anchorA.position + Vector3.forward * (roadWidth / 2 - steelHeight / 2),
-                    radius: steelHeight,
-                    depth: steelWidth * 1.05f
-                ) as MeshPart
-            );
-            yield return Tuple.Create(
-                RoadMaterial,
-                new AnchorMesh(
-                    position: anchorB.position + Vector3.forward * (roadWidth / 2 - steelHeight / 2),
-                    radius: steelHeight,
-                    depth: steelWidth * 1.05f
-                ) as MeshPart
-            );
-            yield return Tuple.Create(
-                RoadMaterial,
+                MetalMaterial,
                 new SteelBox(
-                    left: anchorB.position + back,
-                    right: anchorB.position + forward,
-                    width: steelWidth,
-                    height: steelHeight,
-                    innerWidth: steelWidth * 0.5f,
-                    innerHeight: steelHeight * 0.5f
+                    left: back,
+                    right: forward,
+                    width: radius,
+                    height: radius,
+                    innerWidth: radius * 0.5f,
+                    innerHeight: radius * 0.5f
                 ) as MeshPart
             );
-
-            if (connection.Type == ConnectionType.Road)
-            {
-                var left = anchorA.position + Vector3.down * (roadHeight / 2);
-                var right = anchorB.position + Vector3.down * (roadHeight / 2);
-
-                yield return Tuple.Create(
-                    RoadMaterial,
-                    new RoadBox(
-                        left: left,
-                        right: right,
-                        width: roadWidth,
-                        height: roadHeight
-                    ) as MeshPart
-                );
-            }
-            else if (connection.Type == ConnectionType.Steel)
-            {
-
-                yield return Tuple.Create(
-                    SteelMaterial,
-                    new SteelBox(
-                        left: anchorA.position + forward,
-                        right: anchorB.position + forward,
-                        width: steelWidth,
-                        height: steelHeight,
-                        innerWidth: steelWidth * 0.5f,
-                        innerHeight: steelHeight * 0.5f
-                    ) as MeshPart
-                );
-                yield return Tuple.Create(
-                    SteelMaterial,
-                    new SteelBox(
-                        left: anchorA.position + back,
-                        right: anchorB.position + back,
-                        width: steelWidth,
-                        height: steelHeight,
-                        innerWidth: steelWidth * 0.5f,
-                        innerHeight: steelHeight * 0.5f
-                    ) as MeshPart
-                );
-
-            }
-            else if (connection.Type == ConnectionType.Wood)
-            {
-                yield return Tuple.Create(
-                    WoodMaterial,
-                    new SteelBox(
-                        left: anchorA.position + Vector3.forward * (roadWidth / 2 - steelHeight / 2),
-                        right: anchorB.position + Vector3.forward * (roadWidth / 2 - steelHeight / 2),
-                        width: steelWidth,
-                        height: steelHeight,
-                        innerWidth: steelWidth * 0.5f,
-                        innerHeight: steelHeight * 0.5f
-                    ) as MeshPart
-                );
-                yield return Tuple.Create(
-                    WoodMaterial,
-                    new SteelBox(
-                        left: anchorA.position + Vector3.back * (roadWidth / 2 - steelHeight / 2),
-                        right: anchorB.position + Vector3.back * (roadWidth / 2 - steelHeight / 2),
-                        width: steelWidth,
-                        height: steelHeight,
-                        innerWidth: steelWidth * 0.5f,
-                        innerHeight: steelHeight * 0.5f
-                    ) as MeshPart
-                );
-
-            }
         }
     }
 }

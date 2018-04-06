@@ -146,8 +146,61 @@ public class RoadBox : Box
     }
 }
 
+public class SteelBoxPart : MeshPart
+{
+    public readonly Vector3 left;
+    public readonly Vector3 right;
+
+    public readonly float width;
+    public readonly float height;
+
+    public readonly float innerWidth;
+    public readonly float innerHeight;
+
+    public SteelBoxPart(Vector3 left, Vector3 right, float width, float height, float innerWidth, float innerHeight)
+    {
+        this.left = left;
+        this.right = right;
+        this.width = width;
+        this.height = height;
+        this.innerWidth = innerWidth;
+        this.innerHeight = innerHeight;
+    }
+
+    protected override IEnumerable<MeshPart> Parts()
+    {
+        var n = 2;
+        var diff = left - right;
+        var center = right + diff / n * (n - 1);
+        var up = Vector3.zero;
+        var tmp = diff;
+        Vector3.OrthoNormalize(ref tmp, ref up);
+        var forward = Vector3.Cross(right - left, up).normalized;
+
+        var v1 = left + forward * (width / 2) + up * (height / 2);
+        var v2 = left - forward * (width / 2) + up * (height / 2);
+        var v3 = center - forward * (innerWidth / 2) + up * (innerHeight / 2);
+        var v4 = center + forward * (innerWidth / 2) + up * (innerHeight / 2);
+
+        var v5 = left + forward * (width / 2) - up * (height / 2);
+        var v6 = left - forward * (width / 2) - up * (height / 2);
+
+        var v7 = center - forward * (innerWidth / 2) - up * (innerHeight / 2);
+        var v8 = center + forward * (innerWidth / 2) - up * (innerHeight / 2);
+
+        yield return new Quad(v1, v5, v6, v2); // left left
+        yield return new Quad(v1, v2, v3, v4); // left top
+        yield return new Quad(v5, v8, v7, v6); // left bottom
+        yield return new Quad(v2, v6, v7, v3); // left front
+        yield return new Quad(v1, v4, v8, v5); // left back
+
+        yield return new Box(center, right, innerWidth, innerHeight);
+    }
+}
+
 public class SteelBox : MeshPart
 {
+
     public readonly Vector3 left;
     public readonly Vector3 right;
 
@@ -169,50 +222,23 @@ public class SteelBox : MeshPart
 
     protected override IEnumerable<MeshPart> Parts()
     {
-        var n = 4;
-        var diff = left - right;
-        var center = right + diff / n * (n - 1);
-        var up = Vector3.zero;
-        var tmp = diff;
-        Vector3.OrthoNormalize(ref tmp, ref up);
-        var forward = Vector3.Cross(right - left, up).normalized;
-
-        var v1 = left + forward * (width / 2) + up * (height / 2);
-        var v2 = left - forward * (width / 2) + up * (height / 2);
-        var v3 = right - forward * (width / 2) + up * (height / 2);
-        var v4 = right + forward * (width / 2) + up * (height / 2);
-
-        var v9 = center + forward * (innerWidth / 2) + up * (innerHeight / 2);
-        var v10 = center - forward * (innerWidth / 2) + up * (innerHeight / 2);
-        var v11 = center - forward * (innerWidth / 2) - up * (innerHeight / 2);
-        var v12 = center + forward * (innerWidth / 2) - up * (innerHeight / 2);
-
-        var v5 = left + forward * (width / 2) - up * (height / 2);
-        var v6 = left - forward * (width / 2) - up * (height / 2);
-        var v7 = right - forward * (width / 2) - up * (height / 2);
-        var v8 = right + forward * (width / 2) - up * (height / 2);
-
-
-        yield return new Quad(v1, v2, v10, v9); // left top
-        yield return new Quad(v5, v12, v11, v6); // left bottom
-        yield return new Quad(v2, v6, v11, v10); // left front
-        yield return new Quad(v1, v9, v12, v5); // left back
-
-        yield return new Box(center, right + diff / n, innerWidth, innerHeight);
-
-        center = right + diff / n;
-
-        v9 = center + forward * (innerWidth / 2) + up * (innerHeight / 2);
-        v10 = center - forward * (innerWidth / 2) + up * (innerHeight / 2);
-        v11 = center - forward * (innerWidth / 2) - up * (innerHeight / 2);
-        v12 = center + forward * (innerWidth / 2) - up * (innerHeight / 2);
-
-        yield return new Quad(v9, v10, v3, v4); // right top
-        yield return new Quad(v12, v8, v7, v11); // right bottom
-        yield return new Quad(v10, v11, v7, v3); // right front
-        yield return new Quad(v9, v4, v8, v12); // front back
-
-
+        var center = (left + right) / 2;
+        yield return new SteelBoxPart(
+            left: left,
+            right: center,
+            width: width,
+            height: height,
+            innerWidth: innerWidth,
+            innerHeight: innerHeight
+        );
+        yield return new SteelBoxPart(
+            left: right,
+            right: center,
+            width: width,
+            height: height,
+            innerWidth: innerWidth,
+            innerHeight: innerHeight
+        );
     }
 }
 
