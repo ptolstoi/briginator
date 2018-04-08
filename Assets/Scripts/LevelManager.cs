@@ -14,6 +14,10 @@ public partial class LevelManager : MonoBehaviour
     [SerializeField]
     private GameObject EndLandPrefab;
     [SerializeField]
+    private GameObject WaterPrefab;
+    [SerializeField]
+    private GameObject EndZonePrefab;
+    [SerializeField]
     private GameObject CarPrefab;
 
     [Header("Parents")]
@@ -68,8 +72,8 @@ public partial class LevelManager : MonoBehaviour
             Name = "First Level",
             Rect = new Rect(Vector2.left * 4, new Vector2(8, 6)),
             FixedAnchors = new List<Anchor>(new[] { new Anchor(-4, 0), new Anchor(4, 0) }),
-            StartPoint = new Vector3(-5, 0.5f, -0.5f),
-            EndPoint = new Vector3(5, 0.5f),
+            StartPoint = new Vector3(-5, 0.25f, -0.5f),
+            EndPoint = new Vector3(5, 0),
             StartLand = new Vector3(-4, 0),
             EndLand = new Vector3(4, 0),
         };
@@ -104,7 +108,7 @@ public partial class LevelManager : MonoBehaviour
 
 
         CleanUpLevel(); // Removes everything
-        CleanUpSolution(); // Removes only the solution
+        // CleanUpSolution(); // Removes only the solution
         GenerateLevel(level); // Generates environment + fixed anchors
         GenerateSolution(solution); // Generates only solution
         // Play();
@@ -131,55 +135,18 @@ public partial class LevelManager : MonoBehaviour
             DestroyImmediate(item.gameObject);
         }
 
+        foreach (var item in MeshParent.GetChildrenArray())
+        {
+            DestroyImmediate(item.gameObject);
+        }
+
         id2Rigidbody = new Dictionary<string, Rigidbody2D>();
     }
 
     private void CleanUpSolution()
     {
-        rigidbodies = new List<Rigidbody2D>();
-        joints = new List<Joint2D>();
-
-        // TODO use joints and rigidbodies without fixedAnchors for clean up
-        foreach (var item in BridgeParent.GetChildrenArray())
-        {
-            var rigidbody = item.GetComponent<Rigidbody2D>();
-
-            if (rigidbody != null)
-            {
-                var id = id2Rigidbody.FirstOrDefault(x => x.Value == rigidbody);
-
-                if (id.Key != null && id.Key != "")
-                {
-                    if (!level.FixedAnchors.Exists(x => x.Id == id.Key))
-                    {
-                        id2Rigidbody.Remove(id.Key);
-                    }
-                    else
-                    {
-                        var components = item.GetComponents<Component>();
-                        rigidbodies.Add(rigidbody);
-
-                        foreach (var component in components)
-                        {
-                            if (components.GetType().IsSubclassOf(typeof(Joint2D)))
-                            {
-                                DestroyImmediate(component);
-                            }
-                        }
-
-                        continue;
-                    }
-                }
-            }
-
-            DestroyImmediate(item.gameObject);
-        }
-
-        if (carRigidbody != null)
-        {
-            // handle car
-            joints.AddRange(carRigidbody.GetComponents<WheelJoint2D>());
-        }
+        CleanUpLevel();
+        GenerateLevel(level);
     }
 
     private void Play()

@@ -6,7 +6,6 @@ public class AnchorManager : MonoBehaviour
 {
     public BridgeMeshManager meshGenerator;
     public LevelManager levelManager;
-    public GameObject anchorGameObject;
     public Anchor anchor;
     public bool fixedAnchor;
 
@@ -20,7 +19,7 @@ public class AnchorManager : MonoBehaviour
         mesh.layer = gameObject.layer;
         meshTransform = mesh.transform;
         meshTransform.SetParent(levelManager.MeshParent);
-        anchorTransform = anchorGameObject.transform;
+        anchorTransform = gameObject.transform;
 
         var hasRoad = levelManager.solution.Connections.Any(
             conn => (conn.IdA == anchor.Id || conn.IdB == anchor.Id)

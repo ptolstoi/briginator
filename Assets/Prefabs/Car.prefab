@@ -608,7 +608,7 @@ MonoBehaviour:
   MotorWheels:
   - {fileID: 235658486145963114}
   - {fileID: 235620443663428476}
-  Speed: 1000
+  Speed: 2000
 --- !u!235 &235620443663428476
 WheelJoint2D:
   m_ObjectHideFlags: 1

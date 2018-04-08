@@ -40,6 +40,19 @@ public partial class LevelManager : MonoBehaviour
             layer: EnvironmentLayer
         );
 
+        Create(
+            name: "Water",
+
+            prefab: WaterPrefab,
+            position: new Vector3(
+                (level.StartLand.x + level.EndLand.x) / 2,
+                Mathf.Min(level.StartLand.y, level.EndLand.y),
+                0
+            ),
+            parent: EnvironmentParent,
+            layer: EnvironmentLayer
+        );
+
         foreach (var anchor in level.FixedAnchors)
         {
             GenerateAnchor(anchor, fixedAnchor: true);
@@ -47,16 +60,14 @@ public partial class LevelManager : MonoBehaviour
 
         Create(
             name: "End Zone",
+            prefab: EndZonePrefab,
 
             position: level.EndPoint,
-            scale: new Vector3(0.2f, 5, 1),
             parent: EnvironmentParent,
 
             afterCreate: (go) =>
             {
-                var endZoneCollider = go.AddComponent<BoxCollider2D>();
-                endZoneCollider.isTrigger = true;
-                endZone = go.AddComponent<EndZone>();
+                endZone = go.EnsureComponent<EndZone>();
                 endZone.LevelManager = this;
             }
         );
@@ -111,7 +122,6 @@ public partial class LevelManager : MonoBehaviour
                 rigidbodies.Add(rigidbody);
 
                 var anchorManager = go.AddComponent<AnchorManager>();
-                anchorManager.anchorGameObject = go;
                 anchorManager.levelManager = this;
                 anchorManager.meshGenerator = bridgeMeshManager;
                 anchorManager.anchor = anchor;
