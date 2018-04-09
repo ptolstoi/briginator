@@ -58,6 +58,14 @@ public partial class LevelManager : MonoBehaviour
 
                 waterManager.LevelManager = this;
                 waterManager.MeshGenerator = bridgeMeshManager;
+
+                var triggerZone = go.EnsureComponent<BoxCollider2D>();
+                triggerZone.isTrigger = true;
+                triggerZone.size = new Vector2(
+                    Mathf.Abs(level.StartLand.x - level.EndLand.x),
+                    2
+                );
+                triggerZone.offset = Vector2.down * 4;
             }
         );
 

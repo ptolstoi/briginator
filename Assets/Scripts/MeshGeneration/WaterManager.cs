@@ -22,7 +22,7 @@ public class WaterManager : MonoBehaviour
             position: Vector3.down * 2,
             size: new Vector3(
                 Mathf.Abs(LevelManager.level.StartLand.x - LevelManager.level.EndLand.x),
-                5,
+                10,
                 10
             )
         );
@@ -48,5 +48,10 @@ public class WaterManager : MonoBehaviour
 
         mesh.SetVertices(vertices);
         mesh.RecalculateNormals();
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        other.GetComponentInParent<Rigidbody2D>().gameObject.SetActive(false);
     }
 }

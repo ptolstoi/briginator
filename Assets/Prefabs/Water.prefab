@@ -149,3 +149,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b19d8a0b47763347b6a18c105f497a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LevelManager: {fileID: 0}
+  MeshGenerator: {fileID: 0}
+  AnimationSpeed: 0.25
+  amplitude: 1
+  sinSpeed: 1
+  sinFrequence: 0.6
+  sinAmplitude: 0.15
