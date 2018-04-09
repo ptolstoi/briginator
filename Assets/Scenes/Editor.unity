@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.71376586, g: 0.709096, b: 0.65523165, a: 1}
+  m_IndirectSpecularColor: {r: 0.4752046, g: 0.4761237, b: 0.40613085, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -50,7 +50,7 @@ LightmapSettings:
     m_IndirectOutputScale: 1
     m_AlbedoBoost: 1
     m_TemporalCoherenceThreshold: 1
-    m_EnvironmentLightingMode: 0
+    m_EnvironmentLightingMode: 1
     m_EnableBakedLightmaps: 1
     m_EnableRealtimeLightmaps: 1
   m_LightmapEditorSettings:
@@ -59,7 +59,7 @@ LightmapSettings:
     m_BakeResolution: 40
     m_TextureWidth: 1024
     m_TextureHeight: 1024
-    m_AO: 0
+    m_AO: 1
     m_AOMaxDistance: 1
     m_CompAOExponent: 1
     m_CompAOExponentDirect: 0
@@ -346,14 +346,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 497927479b75b7548b725c7f6e4536a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LevelManager: {fileID: 556135101}
   RoadMaterial: {fileID: 2100000, guid: b3e88635ed67e3b4cb54b4f1086e3227, type: 2}
   WoodMaterial: {fileID: 2100000, guid: bd36cc901e066ec4395961ddf10df00f, type: 2}
   SteelMaterial: {fileID: 2100000, guid: cc5c490220c217d48b4fb526b1dd8b7e, type: 2}
   MetalMaterial: {fileID: 2100000, guid: b051e25f391e02d4b8e86c60a20b773a, type: 2}
   LoadMaterial: {fileID: 2100000, guid: de792ed048929eb4fba6899f6bbf1a4f, type: 2}
   MarkerMaterial: {fileID: 2100000, guid: 5ecba1469e06d274ea9e4ff4d952ec25, type: 2}
-  ShowLoad: 1
+  WaterMaterial: {fileID: 2100000, guid: 50d210092cc8b5d4bbceb9b1b07e5797, type: 2}
+  ShowLoad: 0
+  LevelManager: {fileID: 556135101}
 --- !u!1 &1874952095
 GameObject:
   m_ObjectHideFlags: 0

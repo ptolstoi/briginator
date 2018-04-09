@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.Rendering;
 
 public class BridgeMeshManager : MonoBehaviour
 {
@@ -13,17 +14,23 @@ public class BridgeMeshManager : MonoBehaviour
         Right
     }
 
-    public LevelManager LevelManager;
+    [Header("Materials")]
     public Material RoadMaterial;
     public Material WoodMaterial;
     public Material SteelMaterial;
     public Material MetalMaterial;
     public Material LoadMaterial;
     public Material MarkerMaterial;
+    public Material WaterMaterial;
 
+    [Header("Misc")]
     public bool ShowLoad = true;
+    [Header("Wiring")]
+    public LevelManager LevelManager;
 
     public event Action NeedMeshRegeneration;
+
+
 
     public void GenerateMeshFor(Connection connection, GameObject atGameObject, Parts with = Parts.All, bool useLoadMaterial = false)
     {
@@ -43,23 +50,24 @@ public class BridgeMeshManager : MonoBehaviour
         );
     }
 
+    public void GenerateWaterMesh(GameObject atGameObject, Vector3 position, Vector3 size)
+    {
+        GenerateMesh(
+            gameObject: atGameObject,
+            meshName: "Water",
+            generator: MeshPartsForWater(position, size)
+        );
+    }
+
     private void GenerateMesh(GameObject gameObject, string meshName, IEnumerable<Tuple<Material, MeshPart>> generator)
     {
         var meshRenderer = gameObject.EnsureComponent<MeshRenderer>();
+        meshRenderer.lightProbeUsage = LightProbeUsage.Off;
+        meshRenderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
         var meshFilter = gameObject.EnsureComponent<MeshFilter>();
-
-        meshRenderer.sharedMaterials = new[] {
-            RoadMaterial,
-            WoodMaterial,
-            SteelMaterial,
-            MetalMaterial,
-            MarkerMaterial,
-            LoadMaterial
-         };
 
         var mesh = new Mesh();
         mesh.name = "Mesh " + meshName;
-        mesh.subMeshCount = meshRenderer.sharedMaterials.Length;
 
         // generate mesh
         var vertices = new List<Vector3>();
@@ -75,6 +83,9 @@ public class BridgeMeshManager : MonoBehaviour
         }
 
         mesh.SetVertices(vertices);
+
+        meshRenderer.sharedMaterials = indices.Keys.ToArray();
+        mesh.subMeshCount = meshRenderer.sharedMaterials.Length;
 
         foreach (var pair in indices)
         {
@@ -302,5 +313,16 @@ public class BridgeMeshManager : MonoBehaviour
                 ) as MeshPart
             );
         }
+    }
+
+    private IEnumerable<Tuple<Material, MeshPart>> MeshPartsForWater(Vector3 position, Vector3 size)
+    {
+        yield return Tuple.Create(
+            WaterMaterial,
+            new WaterQuad(
+                position: position,
+                size: size
+            ) as MeshPart
+        );
     }
 }

@@ -19,6 +19,7 @@ ModelImporter:
     100022: Wheel_003
     100024: Grid
     100026: Finish_Line
+    100028: Water
     400000: //RootNode
     400002: Car
     400004: Circle_000
@@ -33,6 +34,7 @@ ModelImporter:
     400022: Wheel_003
     400024: Grid
     400026: Finish_Line
+    400028: Water
     2100000: Metal
     2100002: Glass
     2300000: //RootNode
@@ -49,6 +51,7 @@ ModelImporter:
     2300022: Wheel_003
     2300024: Grid
     2300026: Finish_Line
+    2300028: Water
     3300000: //RootNode
     3300002: Car
     3300004: Circle_000
@@ -63,6 +66,7 @@ ModelImporter:
     3300022: Wheel_003
     3300024: Grid
     3300026: Finish_Line
+    3300028: Water
     4300000: Car
     4300002: Circle_003
     4300004: Circle_001
@@ -76,6 +80,7 @@ ModelImporter:
     4300020: Wheel_001
     4300022: Grid
     4300024: Finish_Line
+    4300026: Water
     7400000: Default Take
     9500000: //RootNode
   externalObjects: {}

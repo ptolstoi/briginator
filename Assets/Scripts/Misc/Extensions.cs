@@ -77,4 +77,10 @@ public static class Extensions
         }
         return comp;
     }
+
+    public static Vector3 NoiseVector(this Vector3 v)
+    {
+        v.y += (Mathf.PerlinNoise(v.x * 1.5f, v.z) - 0.5f);
+        return v;
+    }
 }

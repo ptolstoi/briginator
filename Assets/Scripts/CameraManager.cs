@@ -47,29 +47,32 @@ public class CameraManager : MonoBehaviour
             newPosition += diff;
             movePositionStart = worldPos + diff;
         }
-        else if (useBorderScroll)
+        else
         {
-            if (Input.mousePosition.x < Screen.width * scrollBorder)
+            if (useBorderScroll)
             {
-                moveVector.x = -1;
-            }
-            else if (Input.mousePosition.x > Screen.width * (1 - scrollBorder))
-            {
-                moveVector.x = 1;
-            }
+                if (Input.mousePosition.x < Screen.width * scrollBorder)
+                {
+                    moveVector.x = -1;
+                }
+                else if (Input.mousePosition.x > Screen.width * (1 - scrollBorder))
+                {
+                    moveVector.x = 1;
+                }
 
-            if (Input.mousePosition.y < Screen.height * scrollBorder)
-            {
-                moveVector.y = -1;
-            }
-            else if (Input.mousePosition.y > Screen.height * (1 - scrollBorder))
-            {
-                moveVector.y = 1;
-            }
+                if (Input.mousePosition.y < Screen.height * scrollBorder)
+                {
+                    moveVector.y = -1;
+                }
+                else if (Input.mousePosition.y > Screen.height * (1 - scrollBorder))
+                {
+                    moveVector.y = 1;
+                }
 
-            if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-            {
-                moveVector *= 2;
+                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                {
+                    moveVector *= 2;
+                }
             }
 
             moveVector.z = Input.mouseScrollDelta.y * scrollSpeed;

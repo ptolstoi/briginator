@@ -50,7 +50,15 @@ public partial class LevelManager : MonoBehaviour
                 0
             ),
             parent: EnvironmentParent,
-            layer: EnvironmentLayer
+            layer: EnvironmentLayer,
+
+            afterCreate: go =>
+            {
+                var waterManager = go.EnsureComponent<WaterManager>();
+
+                waterManager.LevelManager = this;
+                waterManager.MeshGenerator = bridgeMeshManager;
+            }
         );
 
         foreach (var anchor in level.FixedAnchors)
