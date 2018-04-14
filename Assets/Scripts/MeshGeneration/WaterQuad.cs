@@ -28,8 +28,8 @@ public class WaterQuad : MeshPart
 
         for (var x = -size.x / 2; x < size.x / 2; x += waveWidth)
         {
-            var waterPixel = Vector3.left * x * waveWidth + position;
-            var nextPixel = Vector3.left * (x + 1) * waveWidth + position;
+            var waterPixel = Vector3.left * x + position;
+            var nextPixel = Vector3.left * (x + waveWidth) + position;
 
             var v1 = new Vector3(waterPixel.x, waterPixel.y, -waveDepth / 2) + offset;
             var v2 = new Vector3(nextPixel.x, nextPixel.y, -waveDepth / 2) + offset;
@@ -48,7 +48,7 @@ public class WaterQuad : MeshPart
 
     private void AddStrip(ref List<Vector3> v, ref List<int> i, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4)
     {
-        var subdivisions = size.z;
+        var subdivisions = size.z / 1f;
 
         var _1 = v1.NoiseVector();
         var _2 = v2.NoiseVector();

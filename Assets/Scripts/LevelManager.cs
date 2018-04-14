@@ -53,11 +53,37 @@ public partial class LevelManager : MonoBehaviour
     private BridgeMeshManager bridgeMeshManager;
 
 
-    [HideInInspector] public Level level;
+    [HideInInspector]
+    public Level level;
     [HideInInspector] public Solution solution;
 
-    [HideInInspector] public Dictionary<string, Rigidbody2D> AnchorId2Rigidbody;
-    [HideInInspector] public Dictionary<Connection, Rigidbody2D> Connection2Rigidbody;
+    public Dictionary<string, Rigidbody2D> AnchorId2Rigidbody;
+    public Dictionary<Connection, Rigidbody2D> Connection2Rigidbody;
+
+    private LevelManagerMode mode;
+    public LevelManagerMode Mode
+    {
+        get { return mode; }
+        set
+        {
+            mode = value;
+
+            if (mode == LevelManagerMode.Edit)
+            {
+                CleanUpLevel();
+                GenerateLevel(level);
+                GenerateSolution(solution);
+            }
+
+            if (onModeChangeEvent != null)
+            {
+                onModeChangeEvent.Invoke(value);
+            }
+        }
+    }
+
+    [Header("Events")]
+    public ModeChangeEvent onModeChangeEvent;
 
     private EndZone endZone;
     private Dictionary<string, Rigidbody2D> id2Rigidbody;
@@ -105,7 +131,7 @@ public partial class LevelManager : MonoBehaviour
         Debug.Log(json);
 
 
-
+        mode = LevelManagerMode.Edit;
 
         CleanUpLevel(); // Removes everything
         // CleanUpSolution(); // Removes only the solution
@@ -117,9 +143,23 @@ public partial class LevelManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.F5))
+        if (mode == LevelManagerMode.Play)
         {
-            Play();
+            if (Input.GetKeyUp(KeyCode.F5))
+            {
+                Play();
+            }
+            if (Input.GetKeyUp(KeyCode.Tab))
+            {
+                Mode = LevelManagerMode.Edit;
+            }
+        }
+        else if (mode == LevelManagerMode.Edit)
+        {
+            if (Input.GetKeyUp(KeyCode.Tab))
+            {
+                Mode = LevelManagerMode.Play;
+            }
         }
     }
 
