@@ -36,8 +36,8 @@ public class WaterQuad : MeshPart
             var v3 = new Vector3(nextPixel.x, nextPixel.y, waveDepth / 2) + offset;
             var v4 = new Vector3(waterPixel.x, waterPixel.y, waveDepth / 2) + offset;
 
-            var v5 = new Vector3(waterPixel.x, -waveHeight, -waveDepth / 2) + offset;
-            var v6 = new Vector3(nextPixel.x, -waveHeight, -waveDepth / 2) + offset;
+            var v5 = new Vector3(waterPixel.x, -waveHeight + waterPixel.y, -waveDepth / 2) + offset;
+            var v6 = new Vector3(nextPixel.x, -waveHeight + nextPixel.y, -waveDepth / 2) + offset;
 
             AddStrip(ref v, ref i, v1, v2, v3, v4);
 

@@ -107,6 +107,7 @@ public class BridgeMeshManager : MonoBehaviour
         var center = Vector3.zero;
 
         var roadHeight = LevelManager.RoadHeight;
+        var roadDepth = roadHeight;
         var roadWidth = 2f;
 
         var steelHeight = 0.25f;
@@ -137,7 +138,7 @@ public class BridgeMeshManager : MonoBehaviour
                 new RoadBox(
                     left: left + forward,
                     right: right + forward,
-                    width: roadHeight,
+                    width: roadDepth,
                     height: roadHeight
                 ) as MeshPart
             );

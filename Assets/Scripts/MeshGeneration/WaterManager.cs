@@ -22,7 +22,7 @@ public class WaterManager : MonoBehaviour
             position: Vector3.down * 2,
             size: new Vector3(
                 Mathf.Abs(LevelManager.level.StartLand.x - LevelManager.level.EndLand.x),
-                10,
+                2,
                 10
             )
         );
