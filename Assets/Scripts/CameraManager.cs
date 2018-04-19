@@ -139,7 +139,7 @@ public class CameraManager : MonoBehaviour
                 ? cubicEasingIn
                 : cubicEasingOut;
 
-        while (t < 1)
+        while (t < 1 && levelManager != null && mode == levelManager.Mode)
         {
             blendCameraMode = myEasing(t);
 

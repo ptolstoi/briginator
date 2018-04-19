@@ -256,12 +256,14 @@ public class AnchorMesh : MeshPart
     private Vector3 position;
     private float radius;
     private float depth;
+    private int n;
 
-    public AnchorMesh(Vector3 position, float radius, float depth)
+    public AnchorMesh(Vector3 position, float radius, float depth, int n = 10)
     {
         this.position = position;
         this.radius = radius;
         this.depth = depth;
+        this.n = n;
     }
 
     protected override IEnumerable<MeshPart> Parts()
@@ -269,9 +271,9 @@ public class AnchorMesh : MeshPart
         var centerFront = position + Vector3.back * (depth / 2);
         var centerBack = position + Vector3.forward * (depth / 2);
 
-        for (float i = 0f, n = 10f; i < n; i++)
+        for (float i = 0f; i < n; i++)
         {
-            var angle = 1 / n * 2 * Mathf.PI;
+            var angle = 1f / n * 2 * Mathf.PI;
             var v1 = Vector3.up * Mathf.Cos(i * angle) * radius +
                      Vector3.right * Mathf.Sin(i * angle) * radius;
             var v2 = Vector3.up * Mathf.Cos((i + 1) * angle) * radius +

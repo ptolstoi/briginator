@@ -21,7 +21,7 @@ public class WaterManager : MonoBehaviour
             atGameObject: gameObject,
             position: Vector3.down * 2,
             size: new Vector3(
-                Mathf.Abs(LevelManager.level.StartLand.x - LevelManager.level.EndLand.x),
+                Mathf.Abs(LevelManager.level.StartLand.x - LevelManager.level.EndLand.x) + 8,
                 2,
                 10
             )

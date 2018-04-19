@@ -51,6 +51,8 @@ public partial class LevelManager : MonoBehaviour
     [Header("Wiring")]
     [SerializeField]
     private BridgeMeshManager bridgeMeshManager;
+    [SerializeField]
+    private LevelEditorManager levelEditorManager;
 
 
     [HideInInspector]
@@ -131,7 +133,7 @@ public partial class LevelManager : MonoBehaviour
         Debug.Log(json);
 
 
-        mode = LevelManagerMode.Edit;
+        Mode = LevelManagerMode.Edit;
 
         CleanUpLevel(); // Removes everything
         // CleanUpSolution(); // Removes only the solution
