@@ -1,5 +1,8 @@
-public enum LevelManagerMode
+public enum GameState
 {
+    Transition,
     Play,
-    Edit
+    Edit,
+    Run
+
 }

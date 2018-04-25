@@ -19,8 +19,8 @@ public partial class LevelManager
             if (GUILayout.Button($"Load {level.name}"))
             {
                 this.level = Level.FromJSON(level.text);
-                CleanUpLevel();
-                GenerateLevel(this.level);
+                this.solution = new Solution();
+                TransitionTo(GameState.Edit);
             }
         }
 
@@ -31,9 +31,8 @@ public partial class LevelManager
         }
     }
 
-    private void OnDrawGizmosSelected()
+    private void _OnDrawGizmosSelected()
     {
-        return;
         if (level == null || level.FixedAnchors == null || level.FixedAnchors.Count == 0)
         {
             return;

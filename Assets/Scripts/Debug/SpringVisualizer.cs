@@ -86,7 +86,7 @@ public class SpringVisualizer : MonoBehaviour
                 if (!max_springses.ContainsKey(joint))
                 {
                     max_springses.Add(joint, 0);
-                    acab.Add(joint, colors.Pop());
+                    acab.Add(joint, colors.PopOrDefault());
                 }
                 max_springses[joint] = Mathf.Max(max_springses[joint], joint.reactionForce.sqrMagnitude);
 

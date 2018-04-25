@@ -3,4 +3,4 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [Serializable]
-public class ModeChangeEvent : UnityEvent<LevelManagerMode> { }
+public class ModeChangeEvent : UnityEvent<GameState?, GameState, GameState?> { }

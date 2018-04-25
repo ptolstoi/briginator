@@ -5,18 +5,15 @@ using System.Collections.Generic;
 
 public class LevelEditorManager : MonoBehaviour
 {
-    [Header("GridSize")]
-
-    public float gridSize = 0.5f;
-
     [Header("Wiring")]
     public LevelManager levelManager;
+    public Transform cursorTransform;
+    public Transform selectedAnchorTransform;
+    public NewConnectionManager newConnectionManager;
+    private EditorMeshGenerator editorMeshGenerator;
 
-    public Transform cursor;
-
-    float depth = 5;
-
-    private float hexHeight => Mathf.Sqrt(3) / 2 * gridSize;
+    [Header("Misc")]
+    public float depth = 5;
 
     private MeshRenderer meshRenderer;
     private MeshFilter meshFilter;
@@ -24,175 +21,124 @@ public class LevelEditorManager : MonoBehaviour
     private List<Vector3> vertices;
     private List<int> indices;
 
+    private Anchor selectedAnchor;
+    private ConnectionType currentConnectionType;
+
     private void Start()
     {
-        meshFilter = GetComponent<MeshFilter>();
-        mesh = new Mesh();
-        mesh.name = "EditorMesh";
+        editorMeshGenerator = gameObject.EnsureComponent<EditorMeshGenerator>();
+        editorMeshGenerator.levelEditorManager = this;
 
-        meshRenderer = gameObject.EnsureComponent<MeshRenderer>();
-        meshRenderer.lightProbeUsage = LightProbeUsage.Off;
-        meshRenderer.reflectionProbeUsage = ReflectionProbeUsage.Off;
-        RegenerateMesh();
-
-        meshFilter.sharedMesh = mesh;
+        cursorTransform.gameObject.SetActive(false);
+        selectedAnchorTransform.gameObject.SetActive(false);
     }
 
-    public void ModeChanged(LevelManagerMode mode)
+    public void ModeChanged(GameState? prev, GameState mode, GameState? next)
     {
-        meshRenderer.enabled = mode == LevelManagerMode.Edit;
-        if (mode == LevelManagerMode.Edit)
+        editorMeshGenerator.enabled = mode == GameState.Edit;
+
+        cursorTransform.gameObject.SetActive(false);
+        selectedAnchorTransform.gameObject.SetActive(false);
+        selectedAnchor = null;
+        newConnectionManager.active = false;
+
+        if (mode == GameState.Edit)
         {
-            RegenerateMesh();
+            editorMeshGenerator.RegenerateMesh();
         }
     }
 
     private void Update()
     {
-        var gridPos = GetMouseWorldPosition();
-
-        if (!gridPos.HasValue || levelManager.Mode == LevelManagerMode.Play)
+        if (levelManager.Mode != GameState.Edit)
         {
-            cursor.gameObject.SetActive(false);
             return;
         }
 
-        cursor.gameObject.SetActive(true);
+        var gridPos = GetMouseWorldPosition();
 
-        cursor.position = gridPos.Value;
-    }
+        var bounds = levelManager.level.Rect;
+        bounds.min -= Vector2.one * levelManager.gridSize / 3;
+        bounds.max += Vector2.one * levelManager.gridSize / 3;
 
-    private void RegenerateMesh()
-    {
-        vertices = new List<Vector3>();
-        indices = new List<int>();
+        var isInGrid = bounds.Contains(gridPos);
 
+        var leftClick = Input.GetMouseButtonUp(0);
+        var rightClick = Input.GetMouseButtonUp(1);
+        cursorTransform.gameObject.SetActive(isInGrid);
 
-        foreach (var part in Generator())
+        if (Input.GetKeyUp(KeyCode.Alpha1)) currentConnectionType = ConnectionType.Road;
+        if (Input.GetKeyUp(KeyCode.Alpha2)) currentConnectionType = ConnectionType.Wood;
+        if (Input.GetKeyUp(KeyCode.Alpha3)) currentConnectionType = ConnectionType.Steel;
+
+        if (isInGrid)
         {
-            if (part is Box)
+            var nearestAnchor = levelManager.GetNearestAnchor(gridPos);
+
+            cursorTransform.position =
+                nearestAnchor != null ?
+                (Vector3)nearestAnchor.Position + Vector3.back * 5
+                : gridPos + Vector3.back * (depth);
+
+            if (nearestAnchor != null)
             {
-                continue;
+                gridPos = nearestAnchor;
             }
-            part.AddToBuffers(ref vertices, ref indices);
+
+            if (selectedAnchor == null && nearestAnchor != null && leftClick)
+            {
+                selectedAnchor = nearestAnchor;
+            }
+            else if (leftClick && selectedAnchor != null)
+            {
+                Anchor otherAnchor = null;
+                if (nearestAnchor == null)
+                {
+                    otherAnchor = new Anchor(gridPos);
+                    levelManager.solution.Add(otherAnchor);
+                }
+                else
+                {
+                    otherAnchor = nearestAnchor;
+                }
+                var newConnection = new Connection(otherAnchor.Id, selectedAnchor.Id, currentConnectionType);
+                levelManager.solution.Add(newConnection);
+                selectedAnchor = otherAnchor;
+            }
         }
 
-        mesh.SetVertices(vertices);
-        mesh.SetIndices(indices.ToArray(), MeshTopology.Triangles, 0);
-
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-    }
-
-    private IEnumerable<MeshPart> Generator()
-    {
-        var levelBounds = levelManager.level.Rect;
-
-        var gridPointSize = gridSize / 8;
-        var gridBoxSize = gridSize / 6 / 4;
-
-        yield return new Quad(
-            position: Vector3.zero + Vector3.forward * depth,
-            up: Vector3.up,
-            right: Vector3.right,
-            width: gridPointSize * 8,
-            height: gridPointSize * 8
-        );
-
-        for (var x = levelBounds.min.x; x <= levelBounds.max.x; x += gridSize)
+        selectedAnchorTransform.gameObject.SetActive(selectedAnchor != null);
+        newConnectionManager.active = selectedAnchor != null;
+        if (selectedAnchor != null)
         {
-            var yEven = true;
-            for (var y = levelBounds.min.y; y <= levelBounds.max.y; y += hexHeight)
+            selectedAnchorTransform.position = (Vector3)selectedAnchor.Position + Vector3.back * 5;
+
+            newConnectionManager.anchorA = (Vector2)selectedAnchor;
+            if (!isInGrid)
             {
-                yEven = !yEven;
-
-                var gridPoint = Vector3.up * y + Vector3.right * x + Vector3.forward * depth;
-
-                if (yEven)
-                {
-                    gridPoint += Vector3.right * gridSize / 2.0f;
-                }
-
-                var height = levelBounds.height - (levelBounds.min.y + y);
-
-                if (x == levelBounds.min.x)
-                {
-                    var width = levelBounds.width - (yEven ? gridSize / 2f : 0);
-
-                    var count = 100; //Mathf.Floor(width / gridSize);
-
-                    yield return new Box(
-                        gridPoint - Vector3.right * gridSize * count,
-                        gridPoint + Vector3.right * gridSize * count,
-                        gridBoxSize,
-                        gridBoxSize);
-
-                    if (!yEven)
-                    {
-                        count = 100; //Mathf.Floor(height / hexHeight);
-                        yield return new Box(
-                            gridPoint - (Vector3.up * hexHeight + Vector3.right * gridSize / 2) * count,
-                            gridPoint + (Vector3.up * hexHeight + Vector3.right * gridSize / 2) * count,
-                            gridBoxSize,
-                            gridBoxSize);
-                    }
-                }
-                else if (y == levelBounds.min.y)
-                {
-                    var width = levelBounds.width - (yEven ? gridSize / 2f : 0) - (x - levelBounds.min.x);
-
-                    var count = Math.Min(
-                        Mathf.Floor(height / hexHeight),
-                        Mathf.Floor(width / (gridSize / 2))
-                    );
-                    count = 100;
-
-                    yield return new Box(
-                        gridPoint - (Vector3.up * hexHeight + Vector3.right * gridSize / 2) * count,
-                        gridPoint + (Vector3.up * hexHeight + Vector3.right * gridSize / 2) * count,
-                        gridBoxSize,
-                        gridBoxSize);
-
-                    // width = (x - levelBounds.min.x);
-
-                    // count = Math.Min(
-                    //     Mathf.Floor(height / hexHeight),
-                    //     Mathf.Floor(width / (gridSize / 2))
-                    // );
-
-                    yield return new Box(
-                        gridPoint - (Vector3.up * hexHeight + Vector3.left * gridSize / 2) * count,
-                        gridPoint + (Vector3.up * hexHeight + Vector3.left * gridSize / 2) * count,
-                        gridBoxSize,
-                        gridBoxSize);
-                }
-                else if (gridPoint.x <= levelBounds.max.x && gridPoint.x + gridSize > levelBounds.max.x)
-                {
-                    var count = 100; //Mathf.Floor(height / hexHeight);
-
-                    yield return new Box(
-                        gridPoint - (Vector3.up * hexHeight + Vector3.left * gridSize / 2) * count,
-                        gridPoint + (Vector3.up * hexHeight + Vector3.left * gridSize / 2) * count,
-                        gridBoxSize,
-                        gridBoxSize);
-                }
-
-                if (gridPoint.x > levelBounds.max.x)
-                {
-                    continue;
-                }
-
-
-                yield return new AnchorMesh(gridPoint, gridPointSize, 0.1f, 6);
+                newConnectionManager.active = false;
             }
+            else
+            {
+                newConnectionManager.anchorB = (Vector2)gridPos;
+            }
+
+
+            if (rightClick)
+            {
+                selectedAnchor = null;
+            }
+
         }
     }
 
-    Vector3? GetMouseWorldPosition()
+    Vector3 GetMouseWorldPosition()
     {
+        var gridSize = levelManager.gridSize;
+        var hexHeight = levelManager.hexHeight;
         var bounds = levelManager.level.Rect;
         var mousePosition = Input.mousePosition;
-        mousePosition.z = -Camera.main.transform.position.z + depth;
+        mousePosition.z = -Camera.main.transform.position.z - depth;
 
         var mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePosition) - (Vector3)bounds.min;
 
@@ -210,14 +156,6 @@ public class LevelEditorManager : MonoBehaviour
 
         mouseWorldPosition = mouseWorldPosition + (Vector3)bounds.min;
 
-        bounds.width += 0.0001f;
-        bounds.height += 0.0001f;
-
-        if (bounds.Contains(mouseWorldPosition))
-        {
-            return mouseWorldPosition;
-        }
-
-        return null;
+        return mouseWorldPosition;
     }
 }

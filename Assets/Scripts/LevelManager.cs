@@ -47,6 +47,7 @@ public partial class LevelManager : MonoBehaviour
     private float MaximalForce = 4000;
     [SerializeField]
     public float RoadHeight = 0.1f;
+    public float gridSize = 0.5f;
 
     [Header("Wiring")]
     [SerializeField]
@@ -62,30 +63,7 @@ public partial class LevelManager : MonoBehaviour
     public Dictionary<string, Rigidbody2D> AnchorId2Rigidbody;
     public Dictionary<Connection, Rigidbody2D> Connection2Rigidbody;
 
-    private LevelManagerMode mode;
-    public LevelManagerMode Mode
-    {
-        get { return mode; }
-        set
-        {
-            mode = value;
-
-            if (mode == LevelManagerMode.Edit)
-            {
-                CleanUpLevel();
-                GenerateLevel(level);
-                GenerateSolution(solution);
-            }
-
-            if (onModeChangeEvent != null)
-            {
-                onModeChangeEvent.Invoke(value);
-            }
-        }
-    }
-
-    [Header("Events")]
-    public ModeChangeEvent onModeChangeEvent;
+    public float hexHeight => Mathf.Sqrt(3) / 2 * gridSize;
 
     private EndZone endZone;
     private Dictionary<string, Rigidbody2D> id2Rigidbody;
@@ -95,6 +73,8 @@ public partial class LevelManager : MonoBehaviour
 
     private void Start()
     {
+        animator = GetComponent<Animator>();
+
         level = new Level()
         {
             Name = "First Level",
@@ -132,8 +112,9 @@ public partial class LevelManager : MonoBehaviour
 
         Debug.Log(json);
 
+        solution = new Solution();
 
-        Mode = LevelManagerMode.Edit;
+        TransitionTo(GameState.Edit);
 
         CleanUpLevel(); // Removes everything
         // CleanUpSolution(); // Removes only the solution
@@ -145,22 +126,29 @@ public partial class LevelManager : MonoBehaviour
 
     private void Update()
     {
-        if (mode == LevelManagerMode.Play)
+        if (Mode == GameState.Play)
         {
-            if (Input.GetKeyUp(KeyCode.F5))
+            if (Input.GetKeyUp(KeyCode.F5) || Input.GetKeyUp(KeyCode.Space))
             {
-                Play();
+                TransitionTo(GameState.Run);
             }
             if (Input.GetKeyUp(KeyCode.Tab))
             {
-                Mode = LevelManagerMode.Edit;
+                TransitionTo(GameState.Edit);
             }
         }
-        else if (mode == LevelManagerMode.Edit)
+        else if (Mode == GameState.Edit)
         {
             if (Input.GetKeyUp(KeyCode.Tab))
             {
-                Mode = LevelManagerMode.Play;
+                TransitionTo(GameState.Play);
+            }
+        }
+        else if (Mode == GameState.Run)
+        {
+            if (Input.GetKeyUp(KeyCode.Tab))
+            {
+                TransitionTo(GameState.Edit);
             }
         }
     }
@@ -191,6 +179,20 @@ public partial class LevelManager : MonoBehaviour
         GenerateLevel(level);
     }
 
+    public void ModeChanged(GameState? prev, GameState mode, GameState? next)
+    {
+        if (mode == GameState.Run)
+        {
+            Play();
+        }
+        else if (mode == GameState.Transition && next == GameState.Edit)
+        {
+            CleanUpLevel();
+            GenerateLevel(level);
+            GenerateSolution(solution);
+        }
+    }
+
     private void Play()
     {
         rigidbodies.ForEach(x => x.isKinematic = false);
@@ -213,5 +215,36 @@ public partial class LevelManager : MonoBehaviour
 
         carRigidbody.velocity = Vector2.zero;
         carRigidbody.angularVelocity = 0;
+    }
+
+    private void OnSolutionChangeHandler()
+    {
+        var solution = this.solution;
+        var level = this.level;
+        CleanUpLevel();
+        GenerateLevel(level);
+        GenerateSolution(solution);
+    }
+
+    Anchor getNearest(List<Anchor> list, Vector2 pos) =>
+        list
+            ?.Select(anchor => new { anchor, distance = Vector2.Distance(anchor.Position, pos) })
+            ?.Where(t => t.distance < this.gridSize)
+            ?.OrderBy(y => y.distance)
+            ?.FirstOrDefault()
+            ?.anchor;
+
+    public Anchor GetNearestAnchor(Vector2 pos)
+    {
+        if (level != null)
+        {
+            var nearest = getNearest(level.FixedAnchors, pos);
+            if (nearest != null)
+            {
+                return nearest;
+            }
+        }
+
+        return getNearest(solution?.Anchors, pos);
     }
 }

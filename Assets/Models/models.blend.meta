@@ -23,6 +23,7 @@ ModelImporter:
     100030: Road
     100032: Cursor
     100034: Cursor_001
+    100036: LandBottom
     400000: //RootNode
     400002: Car
     400004: Circle_000
@@ -41,6 +42,7 @@ ModelImporter:
     400030: Road
     400032: Cursor
     400034: Cursor_001
+    400036: LandBottom
     2100000: Metal
     2100002: Glass
     2300000: //RootNode
@@ -61,6 +63,7 @@ ModelImporter:
     2300030: Road
     2300032: Cursor
     2300034: Cursor_001
+    2300036: LandBottom
     3300000: //RootNode
     3300002: Car
     3300004: Circle_000
@@ -79,6 +82,7 @@ ModelImporter:
     3300030: Road
     3300032: Cursor
     3300034: Cursor_001
+    3300036: LandBottom
     4300000: Car
     4300002: Circle_003
     4300004: Circle_001
@@ -96,6 +100,7 @@ ModelImporter:
     4300028: Road
     4300030: Cursor
     4300032: Cursor_001
+    4300034: LandBottom
     7400000: Default Take
     9500000: //RootNode
   externalObjects: {}

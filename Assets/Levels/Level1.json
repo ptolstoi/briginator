@@ -1,47 +1,47 @@
 {
-    "version": 1,
-    "name": "First Level",
-    "rect": {
-        "serializedVersion": "2",
+  "version": 1,
+  "name": "First Level",
+  "rect": {
+    "serializedVersion": "2",
+    "x": -6.0,
+    "y": -2.0,
+    "width": 12.0,
+    "height": 6.0
+  },
+  "fixedAnchors": [
+    {
+      "id": "fbe062a1-5ecd-40b4-bc41-45bfb9778e17",
+      "position": {
         "x": -4.0,
-        "y": 0.0,
-        "width": 8.0,
-        "height": 6.0
+        "y": 0.0
+      }
     },
-    "fixedAnchors": [
-        {
-            "id": "fbe062a1-5ecd-40b4-bc41-45bfb9778e17",
-            "position": {
-                "x": -4.0,
-                "y": 0.0
-            }
-        },
-        {
-            "id": "2d2526a6-885e-44bc-b672-7840dd0230ec",
-            "position": {
-                "x": 4.0,
-                "y": 0.0
-            }
-        }
-    ],
-    "startPoint": {
-        "x": -5.0,
-        "y": 0.25,
-        "z": -0.5
-    },
-    "endPoint": {
-        "x": 5.0,
-        "y": 0.0,
-        "z": 0.0
-    },
-    "startLand": {
-        "x": -4.0,
-        "y": 0.0,
-        "z": 0.0
-    },
-    "endLand": {
+    {
+      "id": "2d2526a6-885e-44bc-b672-7840dd0230ec",
+      "position": {
         "x": 4.0,
-        "y": 0.0,
-        "z": 0.0
+        "y": 0.0
+      }
     }
+  ],
+  "startPoint": {
+    "x": -7.0,
+    "y": 0.25,
+    "z": -0.5
+  },
+  "endPoint": {
+    "x": 5.0,
+    "y": 0.0,
+    "z": 0.0
+  },
+  "startLand": {
+    "x": -4.0,
+    "y": 0.0,
+    "z": 0.0
+  },
+  "endLand": {
+    "x": 4.0,
+    "y": 0.0,
+    "z": 0.0
+  }
 }

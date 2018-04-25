@@ -21,15 +21,15 @@ public class AnchorManager : MonoBehaviour
         meshTransform.SetParent(levelManager.MeshParent);
         anchorTransform = gameObject.transform;
 
-        var hasRoad = levelManager.solution.Connections.Any(
+        var hasRoad = levelManager?.solution?.Connections?.Any(
             conn => (conn.IdA == anchor.Id || conn.IdB == anchor.Id)
                     && conn.Type == ConnectionType.Road
-        );
+        ) ?? true;
 
         meshGenerator.GenerateMeshFor(
             anchor: anchor,
             atGameObject: mesh,
-            hasRoadConnections: hasRoad
+            hasRoadConnections: fixedAnchor || hasRoad
         );
     }
 

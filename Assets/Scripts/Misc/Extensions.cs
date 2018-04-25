@@ -83,4 +83,14 @@ public static class Extensions
         v.y += (Mathf.PerlinNoise(v.x * 1.5f, v.z) - 0.5f);
         return v;
     }
+
+    public static Color PopOrDefault(this Stack<Color> self)
+    {
+        if (self.Count != 0)
+        {
+            return self.Pop();
+        }
+
+        return UnityEngine.Random.ColorHSV();
+    }
 }

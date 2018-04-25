@@ -18,7 +18,6 @@ public class CameraManager : MonoBehaviour
     private new Camera camera;
     private Vector3 targetPosition;
     // 0 - play / 1 - edit
-    private float blendCameraMode = 1;
     private float xSize;
 
     void Start()
@@ -32,7 +31,7 @@ public class CameraManager : MonoBehaviour
 
     void LateUpdate()
     {
-        if (levelManager.level == null)
+        if (levelManager.level == null || levelManager.Mode == GameState.Transition)
         {
             return;
         }
@@ -97,21 +96,18 @@ public class CameraManager : MonoBehaviour
         newPosition.z = Mathf.Max(-25, Mathf.Min(newPosition.z, -10));
 
         var targetZ = 0f;
-        var currentZ = transform.position.z;
 
-        if (levelManager.Mode == LevelManagerMode.Play)
+        if (levelManager.Mode == GameState.Edit)
+        {
+            targetZ = -900f;
+            targetPosition = newPosition;
+        }
+        else
         {
             targetZ = newPosition.z;
 
             targetPosition = newPosition;
         }
-        else
-        {
-            targetZ = -900f;
-            targetPosition = newPosition;
-        }
-
-        targetZ = Mathf.Lerp(currentZ, targetZ, blendCameraMode);
 
         camera.fieldOfView = Mathf.Atan(xSize / Mathf.Abs(targetZ)) * 2 * Mathf.Rad2Deg;
 
@@ -122,28 +118,47 @@ public class CameraManager : MonoBehaviour
         );
     }
 
-    public void ModeChanged(LevelManagerMode mode)
+    public void ModeChanged(GameState? prev, GameState mode, GameState? next)
     {
-        StartCoroutine(AnimateBlend(mode));
+        if (mode != GameState.Transition)
+        {
+            return;
+        }
+
+        if (next == GameState.Edit || next == GameState.Play)
+        {
+            StartCoroutine(AnimateBlend(next.Value));
+        }
     }
 
     Func<float, float> cubicEasingIn = x => x * x * x;
     Func<float, float> cubicEasingOut = x => 1f + (x -= 1f) * x * x;
 
-    IEnumerator AnimateBlend(LevelManagerMode mode)
+    IEnumerator AnimateBlend(GameState mode)
     {
-        float t = 0;
-
         Func<float, float> myEasing =
-            mode == LevelManagerMode.Edit
+            mode == GameState.Edit
                 ? cubicEasingIn
                 : cubicEasingOut;
 
-        while (t < 1 && levelManager != null && mode == levelManager.Mode)
+        while (levelManager.TransitionProgress < 1)
         {
-            blendCameraMode = myEasing(t);
+            var blendCameraMode = myEasing(levelManager.TransitionProgress);
 
-            t += Time.deltaTime;
+            var position = transform.position;
+
+            var targetZ = mode == GameState.Edit ? -900f : targetPosition.z;
+
+            targetZ = Mathf.Lerp(position.z, targetZ, blendCameraMode);
+
+            camera.fieldOfView = Mathf.Atan(xSize / Mathf.Abs(targetZ)) * 2 * Mathf.Rad2Deg;
+
+            transform.position = new Vector3(
+                position.x,
+                position.y,
+                targetZ
+            );
+
             yield return null;
         }
     }

@@ -150,6 +150,8 @@ public partial class LevelManager : MonoBehaviour
 
     private void GenerateSolution(Solution solution)
     {
+        solution.OnSolutionChange -= OnSolutionChangeHandler;
+        solution.OnSolutionChange += OnSolutionChangeHandler;
         solution.Anchors.ForEach(x =>
         {
             var rb = GenerateAnchor(x);
@@ -192,9 +194,7 @@ public partial class LevelManager : MonoBehaviour
             connectionManager.connectionJoint = springJoint;
 
 
-#if UNITY_EDITOR
             goA.EnsureComponent<SpringVisualizer>();
-#endif
 
             joints.Add(springJoint);
 
@@ -240,7 +240,6 @@ public partial class LevelManager : MonoBehaviour
             }
         }
     }
-
     GameObject Create(
             GameObject prefab = null,
             string name = null,
