@@ -52,6 +52,6 @@ public class WaterManager : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        other.GetComponentInParent<Rigidbody2D>().gameObject.SetActive(false);
+        other?.GetComponentInParent<Rigidbody2D>()?.gameObject?.SetActive(false);
     }
 }

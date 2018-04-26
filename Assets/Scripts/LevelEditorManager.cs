@@ -8,7 +8,8 @@ public class LevelEditorManager : MonoBehaviour
     enum EditorState
     {
         NothingSelected,
-        AnchorSelected
+        AnchorSelected,
+        ConnectionSelected
 
     }
 
@@ -18,6 +19,7 @@ public class LevelEditorManager : MonoBehaviour
     public Transform cursorTransform;
     public Transform selectedAnchorTransform;
     public NewConnectionManager newConnectionManager;
+    public NewConnectionManager selectedConnectionManager;
     private EditorMeshGenerator editorMeshGenerator;
 
     [Header("Misc")]
@@ -32,6 +34,7 @@ public class LevelEditorManager : MonoBehaviour
     private List<int> indices;
 
     private Anchor selectedAnchor;
+    private ConnectionEx selectedConnection;
     private ConnectionType currentConnectionType;
 
     private EditorState state;
@@ -69,7 +72,8 @@ public class LevelEditorManager : MonoBehaviour
             return;
         }
 
-        var gridPos = GetMouseWorldPosition();
+        var worldPos = GetMouseWorldPosition();
+        var gridPos = SnapToGrid(worldPos);
 
         var bounds = levelManager.level.Rect;
         bounds.min -= Vector2.one * levelManager.gridSize / 3;
@@ -92,6 +96,8 @@ public class LevelEditorManager : MonoBehaviour
             gridPos = nearestAnchor.Position;
         }
 
+        var nearestConnection = (nearestAnchor == null || state == EditorState.ConnectionSelected) ?
+            levelManager.GetNearestConnection(worldPos) : null;
 
         cursorTransform.gameObject.SetActive(isInGrid);
         if (isInGrid)
@@ -103,6 +109,7 @@ public class LevelEditorManager : MonoBehaviour
         {
             selectedAnchorTransform.gameObject.SetActive(false);
             newConnectionManager.active = false;
+            selectedConnectionManager.active = false;
 
             if (isInGrid)
             {
@@ -110,6 +117,19 @@ public class LevelEditorManager : MonoBehaviour
                 {
                     selectedAnchor = nearestAnchor;
                     state = EditorState.AnchorSelected;
+                }
+                else if (nearestAnchor == null && nearestConnection != null)
+                {
+                    newConnectionManager.active = true;
+                    newConnectionManager.anchorA = nearestConnection.AnchorA.Position.WithZ(-newConnectionDepth);
+                    newConnectionManager.anchorB = nearestConnection.AnchorB.Position.WithZ(-newConnectionDepth);
+                    cursorTransform.gameObject.SetActive(false);
+
+                    if (selectButtonClicked)
+                    {
+                        selectedConnection = nearestConnection;
+                        state = EditorState.ConnectionSelected;
+                    }
                 }
             }
         }
@@ -151,78 +171,58 @@ public class LevelEditorManager : MonoBehaviour
                 state = EditorState.NothingSelected;
             }
         }
+        else if (state == EditorState.ConnectionSelected)
+        {
+            cursorTransform.gameObject.SetActive(false);
+            selectedConnectionManager.active = true;
+            selectedConnectionManager.anchorA = selectedConnection.AnchorA.Position.WithZ(-newConnectionDepth);
+            selectedConnectionManager.anchorB = selectedConnection.AnchorB.Position.WithZ(-newConnectionDepth);
+            newConnectionManager.active = false;
 
-        // if (isInGrid)
-        // {
-        //     var nearestAnchor = levelManager.GetNearestAnchor(gridPos);
+            if (deleteButtonClicked)
+            {
+                levelManager.solution.Remove(selectedConnection);
 
-        //     cursorTransform.position =
-        //         nearestAnchor != null ?
-        //         (Vector3)nearestAnchor.Position + Vector3.back * 5
-        //         : gridPos + Vector3.back * (depth);
+                selectedConnection = null;
+                state = EditorState.NothingSelected;
+            }
+            else if (nearestConnection != null)
+            {
+                if (!nearestConnection.IsEqual(selectedConnection))
+                {
+                    newConnectionManager.active = true;
+                    newConnectionManager.anchorA = nearestConnection.AnchorA.Position.WithZ(-newConnectionDepth);
+                    newConnectionManager.anchorB = nearestConnection.AnchorB.Position.WithZ(-newConnectionDepth);
 
-        //     if (nearestAnchor != null)
-        //     {
-        //         gridPos = nearestAnchor;
-        //     }
-
-        //     if (selectedAnchor == null && nearestAnchor != null && leftClick)
-        //     {
-        //         selectedAnchor = nearestAnchor;
-        //     }
-        //     else if (leftClick && selectedAnchor != null)
-        //     {
-        //         Anchor otherAnchor = null;
-        //         if (nearestAnchor == null)
-        //         {
-        //             otherAnchor = new Anchor(gridPos);
-        //             levelManager.solution.Add(otherAnchor);
-        //         }
-        //         else
-        //         {
-        //             otherAnchor = nearestAnchor;
-        //         }
-        //         var newConnection = new Connection(otherAnchor.Id, selectedAnchor.Id, currentConnectionType);
-        //         levelManager.solution.Add(newConnection);
-        //         selectedAnchor = otherAnchor;
-        //     }
-        // }
-
-        // selectedAnchorTransform.gameObject.SetActive(selectedAnchor != null);
-        // newConnectionManager.active = selectedAnchor != null;
-        // if (selectedAnchor != null)
-        // {
-        //     selectedAnchorTransform.position = (Vector3)selectedAnchor.Position + Vector3.back * 5;
-
-        //     newConnectionManager.anchorA = (Vector2)selectedAnchor;
-        //     if (!isInGrid)
-        //     {
-        //         newConnectionManager.active = false;
-        //     }
-        //     else
-        //     {
-        //         newConnectionManager.anchorB = (Vector2)gridPos;
-        //     }
-
-
-        //     if (rightClick)
-        //     {
-        //         selectedAnchor = null;
-        //     }
-
-        // }
+                    if (selectButtonClicked)
+                    {
+                        selectedConnection = nearestConnection;
+                    }
+                }
+            }
+            else if (deselectButtonClicked)
+            {
+                state = EditorState.NothingSelected;
+            }
+        }
     }
 
     Vector3 GetMouseWorldPosition()
     {
-        var gridSize = levelManager.gridSize;
-        var hexHeight = levelManager.hexHeight;
         var bounds = levelManager.level.Rect;
         var mousePosition = Input.mousePosition;
         mousePosition.z = -Camera.main.transform.position.z - cursorDepth;
 
-        var mouseWorldPosition = Camera.main.ScreenToWorldPoint(mousePosition) - (Vector3)bounds.min;
+        return Camera.main.ScreenToWorldPoint(mousePosition);
+    }
 
+    Vector3 SnapToGrid(Vector3 mouseWorldPosition)
+    {
+        var gridSize = levelManager.gridSize;
+        var hexHeight = levelManager.hexHeight;
+        var bounds = levelManager.level.Rect;
+
+        mouseWorldPosition -= (Vector3)bounds.min;
         mouseWorldPosition.y = Mathf.Round(mouseWorldPosition.y / hexHeight) * hexHeight;
 
         var posY = Mathf.RoundToInt(mouseWorldPosition.y / hexHeight);

@@ -248,4 +248,51 @@ public partial class LevelManager : MonoBehaviour
 
         return getNearest(solution?.Anchors, pos);
     }
+
+    public Anchor GetAnchorById(string id)
+    {
+        return level?.FixedAnchors.FirstOrDefault(x => x.Id == id) ??
+            solution?.Anchors.FirstOrDefault(x => x.Id == id);
+    }
+
+    public ConnectionEx GetNearestConnection(Vector2 pos)
+    {
+        var conTmp = solution?.Connections
+            .Select(con =>
+            {
+                var anchorA = GetAnchorById(con.IdA);
+                var anchorB = GetAnchorById(con.IdB);
+
+                var dir = anchorB.Position - anchorA.Position;
+                var dirNorm = dir.normalized;
+                var aToPos = pos - anchorA.Position;
+                var posOnAB = Vector2.Dot(aToPos, dirNorm) * dirNorm;
+
+                return new
+                {
+                    con,
+                    dist = (aToPos - posOnAB).magnitude,
+                    inside = posOnAB.Divide(dir),
+                    anchorA,
+                    anchorB
+                };
+            })
+            .Where(i => i.inside >= 0 && i.inside <= 1 && i.dist < gridSize / 2)
+            .OrderByDescending(x => x.dist)
+            .FirstOrDefault();
+
+        if (conTmp != null)
+        {
+            return new ConnectionEx()
+            {
+                IdA = conTmp.con.IdA,
+                IdB = conTmp.con.IdB,
+                Type = conTmp.con.Type,
+                AnchorA = conTmp.anchorA,
+                AnchorB = conTmp.anchorB
+            };
+        }
+
+        return null;
+    }
 }

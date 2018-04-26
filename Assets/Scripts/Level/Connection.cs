@@ -22,4 +22,15 @@ public class Connection
         this.idB = idB;
         this.type = type;
     }
+
+    public bool IsEqual(Connection other)
+    {
+        return (idA == other.idA && idB == other.idB) || (idB == other.idA && idA == other.idB);
+    }
+}
+
+public class ConnectionEx : Connection
+{
+    public Anchor AnchorA { get; set; }
+    public Anchor AnchorB { get; set; }
 }

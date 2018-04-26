@@ -55,13 +55,15 @@ public class ConnectionManager : MonoBehaviour
 
         meshRenderer = mesh.GetComponent<MeshRenderer>();
 
-        var originalLoadMaterial = meshRenderer.sharedMaterials.FirstOrDefault(x => x.name.Contains("Load"));
+        var originalLoadMaterial = meshRenderer.sharedMaterials
+            .Select((mat, i) => new { i, mat })
+            .FirstOrDefault(x => x.mat.name.Contains("Load"));
         if (originalLoadMaterial != null)
         {
-            loadMaterial = new Material(meshRenderer.sharedMaterials.Last());
+            loadMaterial = new Material(originalLoadMaterial.mat);
             loadMaterial.name += " ConnectionManager Copy";
             var sharedMats = meshRenderer.sharedMaterials;
-            sharedMats[sharedMats.Length - 1] = loadMaterial;
+            sharedMats[originalLoadMaterial.i] = loadMaterial;
             meshRenderer.sharedMaterials = sharedMats;
         }
         else

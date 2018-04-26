@@ -87,6 +87,35 @@ public static class Extensions
     public static Vector3 WithZ(this Vector3 v, float z) => new Vector3(v.x, v.y, z);
     public static Vector3 WithZ(this Vector2 v, float z) => new Vector3(v.x, v.y, z);
 
+    public static float Divide(this Vector2 v, Vector2 v2)
+    {
+        var l1 = v.x / v2.x;
+        var l2 = v.y / v2.y;
+
+        var l1nan = float.IsNaN(l1);
+        var l2nan = float.IsNaN(l2);
+
+        if (l1nan && l2nan)
+        {
+            return l1;
+        }
+        else if (l1nan)
+        {
+            return l2;
+        }
+        else if (l2nan)
+        {
+            return l1;
+        }
+        else if (!Mathf.Approximately(l1, l2))
+        {
+            Debug.Log(l1 - l2);
+            return float.NaN;
+        }
+
+        return l1;
+    }
+
     public static Color PopOrDefault(this Stack<Color> self)
     {
         if (self.Count != 0)

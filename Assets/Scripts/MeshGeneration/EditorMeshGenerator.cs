@@ -77,7 +77,7 @@ public class EditorMeshGenerator : MonoBehaviour
         var depth = levelEditorManager.gridDepth;
 
         var gridPointSize = gridSize / 8;
-        var gridBoxSize = gridSize / 6 / 4;
+        // var gridBoxSize = gridSize / 6 / 4;
 
         // yield return new Quad(
         //     position: Vector3.zero + Vector3.forward * depth,
