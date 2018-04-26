@@ -50,15 +50,24 @@ public class ConnectionManager : MonoBehaviour
         meshGenerator.GenerateMeshFor(
             connection: connection,
             atGameObject: mesh,
-            useLoadMaterial: meshGenerator.ShowLoad
+            useLoadMaterial: meshGenerator.LevelManager.ShowLoad
         );
 
         meshRenderer = mesh.GetComponent<MeshRenderer>();
-        loadMaterial = new Material(meshRenderer.sharedMaterials.Last());
-        loadMaterial.name += " ConnectionManager Copy";
-        var sharedMats = meshRenderer.sharedMaterials;
-        sharedMats[sharedMats.Length - 1] = loadMaterial;
-        meshRenderer.sharedMaterials = sharedMats;
+
+        var originalLoadMaterial = meshRenderer.sharedMaterials.FirstOrDefault(x => x.name.Contains("Load"));
+        if (originalLoadMaterial != null)
+        {
+            loadMaterial = new Material(meshRenderer.sharedMaterials.Last());
+            loadMaterial.name += " ConnectionManager Copy";
+            var sharedMats = meshRenderer.sharedMaterials;
+            sharedMats[sharedMats.Length - 1] = loadMaterial;
+            meshRenderer.sharedMaterials = sharedMats;
+        }
+        else
+        {
+            loadMaterial = null;
+        }
 
     }
 
@@ -79,8 +88,11 @@ public class ConnectionManager : MonoBehaviour
             );
             meshTransform.localScale = new Vector3(distance, 1, 1);
 
-            var load = connectionJoint.reactionForce.sqrMagnitude / connectionJoint.breakForce;
-            loadMaterial.color = Color.Lerp(Color.green, Color.red, load);
+            if (loadMaterial != null)
+            {
+                var load = connectionJoint.reactionForce.sqrMagnitude / connectionJoint.breakForce;
+                loadMaterial.color = Color.Lerp(Color.green, Color.red, load);
+            }
         }
     }
 

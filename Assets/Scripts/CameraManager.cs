@@ -17,8 +17,6 @@ public class CameraManager : MonoBehaviour
     private Vector3 movePositionStart;
     private new Camera camera;
     private Vector3 targetPosition;
-    // 0 - play / 1 - edit
-    private float xSize;
 
     void Start()
     {
@@ -26,7 +24,7 @@ public class CameraManager : MonoBehaviour
         camera = GetComponent<Camera>();
 
         targetPosition = transform.position;
-        xSize = Mathf.Abs(transform.position.z) * Mathf.Tan(camera.fieldOfView / 2 * Mathf.Deg2Rad);
+        camera.orthographicSize = Mathf.Abs(transform.position.z) * Mathf.Tan(camera.fieldOfView / 2 * Mathf.Deg2Rad);
     }
 
     void LateUpdate()
@@ -87,7 +85,7 @@ public class CameraManager : MonoBehaviour
             newPosition += (moveVector + Vector3.forward * zoomDelta) * Time.deltaTime * scrollSpeed;
         }
 
-        xSize = Mathf.Abs(targetPosition.z) * Mathf.Tan(45f / 2 * Mathf.Deg2Rad);
+        camera.orthographicSize = Mathf.Abs(targetPosition.z) * Mathf.Tan(45f / 2 * Mathf.Deg2Rad);
 
         newPosition.x = Mathf.Max(levelManager.level.StartPoint.x, newPosition.x);
         newPosition.x = Mathf.Min(levelManager.level.EndPoint.x, newPosition.x);
@@ -109,7 +107,7 @@ public class CameraManager : MonoBehaviour
             targetPosition = newPosition;
         }
 
-        camera.fieldOfView = Mathf.Atan(xSize / Mathf.Abs(targetZ)) * 2 * Mathf.Rad2Deg;
+        camera.fieldOfView = Mathf.Atan(camera.orthographicSize / Mathf.Abs(targetZ)) * 2 * Mathf.Rad2Deg;
 
         transform.position = new Vector3(
             newPosition.x,
@@ -122,11 +120,13 @@ public class CameraManager : MonoBehaviour
     {
         if (mode != GameState.Transition)
         {
+            camera.orthographic = mode == GameState.Edit;
             return;
         }
 
         if (next == GameState.Edit || next == GameState.Play)
         {
+            camera.orthographic = false;
             StartCoroutine(AnimateBlend(next.Value));
         }
     }
@@ -151,7 +151,7 @@ public class CameraManager : MonoBehaviour
 
             targetZ = Mathf.Lerp(position.z, targetZ, blendCameraMode);
 
-            camera.fieldOfView = Mathf.Atan(xSize / Mathf.Abs(targetZ)) * 2 * Mathf.Rad2Deg;
+            camera.fieldOfView = Mathf.Atan(camera.orthographicSize / Mathf.Abs(targetZ)) * 2 * Mathf.Rad2Deg;
 
             transform.position = new Vector3(
                 position.x,

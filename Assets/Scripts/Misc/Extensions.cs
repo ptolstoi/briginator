@@ -84,6 +84,9 @@ public static class Extensions
         return v;
     }
 
+    public static Vector3 WithZ(this Vector3 v, float z) => new Vector3(v.x, v.y, z);
+    public static Vector3 WithZ(this Vector2 v, float z) => new Vector3(v.x, v.y, z);
+
     public static Color PopOrDefault(this Stack<Color> self)
     {
         if (self.Count != 0)

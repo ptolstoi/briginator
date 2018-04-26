@@ -48,6 +48,7 @@ public partial class LevelManager : MonoBehaviour
     [SerializeField]
     public float RoadHeight = 0.1f;
     public float gridSize = 0.5f;
+    public bool ShowLoad = true;
 
     [Header("Wiring")]
     [SerializeField]

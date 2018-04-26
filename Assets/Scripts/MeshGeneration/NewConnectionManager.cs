@@ -38,7 +38,7 @@ public class NewConnectionManager : MonoBehaviour
         {
             var diff = anchorA - anchorB;
 
-            transform.position = (anchorA + anchorB) / 2f + Vector3.back * 5;
+            transform.position = (anchorA + anchorB) / 2f;
             connectionTransform.eulerAngles = new Vector3(
                 0,
                 0,
@@ -50,8 +50,8 @@ public class NewConnectionManager : MonoBehaviour
                 connectionTransform.localScale.z
             );
 
-            anchorATransform.position = anchorA + Vector3.back * 5;
-            anchorBTransform.position = anchorB + Vector3.back * 5;
+            anchorATransform.position = anchorA;
+            anchorBTransform.position = anchorB;
         }
     }
 }

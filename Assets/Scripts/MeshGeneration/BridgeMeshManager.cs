@@ -23,8 +23,6 @@ public class BridgeMeshManager : MonoBehaviour
     public Material MarkerMaterial;
     public Material WaterMaterial;
 
-    [Header("Misc")]
-    public bool ShowLoad = true;
     [Header("Wiring")]
     public LevelManager LevelManager;
 

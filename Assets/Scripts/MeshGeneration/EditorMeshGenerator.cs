@@ -74,7 +74,7 @@ public class EditorMeshGenerator : MonoBehaviour
         var levelBounds = level.Rect;
         var gridSize = levelManager.gridSize;
         var hexHeight = levelManager.hexHeight;
-        var depth = -levelEditorManager.depth;
+        var depth = levelEditorManager.gridDepth;
 
         var gridPointSize = gridSize / 8;
         var gridBoxSize = gridSize / 6 / 4;
@@ -94,7 +94,7 @@ public class EditorMeshGenerator : MonoBehaviour
             {
                 yEven = !yEven;
 
-                var gridPoint = Vector3.up * y + Vector3.right * x + Vector3.forward * depth;
+                var gridPoint = Vector3.up * y + Vector3.right * x + Vector3.back * depth;
 
                 if (yEven)
                 {
