@@ -135,10 +135,22 @@ public class LevelEditorManager : MonoBehaviour
         }
         else if (state == EditorState.AnchorSelected)
         {
+            var maxLength = 6;
+            if (currentConnectionType == ConnectionType.Steel)
+            {
+                maxLength = 12;
+            }
+            else if (currentConnectionType == ConnectionType.Wood)
+            {
+                maxLength = 8;
+            }
+            var tooLong = Vector2.SqrMagnitude(selectedAnchor.Position - (Vector2)gridPos) >
+             Mathf.Pow(levelManager.gridSize * maxLength, 2);
+
             selectedAnchorTransform.gameObject.SetActive(true);
             selectedAnchorTransform.position = selectedAnchor.Position.WithZ(-newConnectionDepth);
 
-            newConnectionManager.active = isInGrid;
+            newConnectionManager.active = !tooLong && isInGrid;
             newConnectionManager.anchorA = selectedAnchor.Position.WithZ(-newConnectionDepth);
             newConnectionManager.anchorB = gridPos.WithZ(-newConnectionDepth);
 
@@ -149,20 +161,24 @@ public class LevelEditorManager : MonoBehaviour
             }
             else if (selectButtonClicked && isInGrid)
             {
-                Anchor otherAnchor = null;
-                if (nearestAnchor == null)
+                if (!tooLong)
                 {
-                    var newAnchor = new Anchor(gridPos);
-                    levelManager.solution.Add(newAnchor);
-                    otherAnchor = newAnchor;
+
+                    Anchor otherAnchor = null;
+                    if (nearestAnchor == null)
+                    {
+                        var newAnchor = new Anchor(gridPos);
+                        levelManager.solution.Add(newAnchor);
+                        otherAnchor = newAnchor;
+                    }
+                    else
+                    {
+                        otherAnchor = nearestAnchor;
+                    }
+                    var newConnection = new Connection(selectedAnchor.Id, otherAnchor.Id, currentConnectionType);
+                    levelManager.solution.Add(newConnection);
+                    selectedAnchor = otherAnchor;
                 }
-                else
-                {
-                    otherAnchor = nearestAnchor;
-                }
-                var newConnection = new Connection(selectedAnchor.Id, otherAnchor.Id, currentConnectionType);
-                levelManager.solution.Add(newConnection);
-                selectedAnchor = otherAnchor;
             }
             else if (deleteButtonClicked)
             {

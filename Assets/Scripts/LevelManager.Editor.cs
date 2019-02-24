@@ -24,10 +24,18 @@ public partial class LevelManager
             }
         }
 
-        if (GUILayout.Button("Solution"))
+        var x = GUILayout.TextField("");
+        if (x.Length > 0 && x[0] == '{')
         {
-            CleanUpSolution();
+            solution = Solution.FromJSON(x);
+            CleanUpLevel();
+            GenerateLevel(level);
             GenerateSolution(solution);
+        }
+
+        if (GUILayout.Button("JSON of Solution"))
+        {
+            Debug.Log(solution.ToJSON());
         }
     }
 
